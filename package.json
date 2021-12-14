@@ -1,0 +1,46 @@
+{
+  "name": "vite-electron-builder",
+  "private": true,
+  "engines": {
+    "node": ">=v16.13",
+    "npm": ">=8.1"
+  },
+  "main": "packages/main/dist/index.cjs",
+  "scripts": {
+    "build": "node scripts/build.js",
+    "precompile": "cross-env MODE=production npm run build",
+    "compile": "electron-builder build --config .electron-builder.config.js --dir --config.asar=false",
+    "pretest": "npm run build",
+    "test": "node tests/app.spec.js",
+    "watch": "node scripts/watch.js",
+    "lint": "eslint . --ext js,ts,vue",
+    "typecheck-main": "tsc --noEmit -p packages/main/tsconfig.json",
+    "typecheck-preload": "tsc --noEmit -p packages/preload/tsconfig.json",
+    "typecheck-renderer": "vue-tsc --noEmit -p packages/renderer/tsconfig.json",
+    "typecheck": "npm run typecheck-main && npm run typecheck-preload && npm run typecheck-renderer",
+    "pretypecheck-renderer": "dts-cb -i packages/preload/src/**/*.ts -o packages/preload/exposedInMainWorld.d.ts"
+  },
+  "devDependencies": {
+    "@types/electron-devtools-installer": "2.2.0",
+    "@typescript-eslint/eslint-plugin": "5.7.0",
+    "@vitejs/plugin-vue": "1.10.2",
+    "cross-env": "7.0.3",
+    "dts-for-context-bridge": "0.6.2",
+    "electron": "16.0.4",
+    "electron-builder": "22.14.5",
+    "electron-devtools-installer": "3.2.0",
+    "eslint": "8.4.1",
+    "eslint-plugin-vue": "8.2.0",
+    "nano-staged": "0.4.5",
+    "playwright": "1.17.1",
+    "simple-git-hooks": "2.7.0",
+    "typescript": "4.5.4",
+    "vite": "2.7.2",
+    "vue-tsc": "0.29.8"
+  },
+  "dependencies": {
+    "electron-updater": "4.6.5",
+    "vue": "3.2.26",
+    "vue-router": "4.0.12"
+  }
+}
