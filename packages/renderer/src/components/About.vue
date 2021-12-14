@@ -14,14 +14,15 @@
   </div>
 </template>
 
-<script lang="ts">
+<script >
 import {defineComponent} from 'vue';
+import {useElectron} from '/@/use/electron';
 export default defineComponent({
   name: 'App',
   setup() {
-    return {
-      versions: window.versions,
-    };
+    const {versions} = useElectron();
+    // It makes no sense to make "versions" reactive
+    return {versions};
   },
 });
 </script>

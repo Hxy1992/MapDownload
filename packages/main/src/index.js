@@ -1,7 +1,8 @@
-import {app, BrowserWindow} from 'electron';
+import {app, BrowserWindow, shell, dialog} from 'electron';
 import {join} from 'path';
 import {URL} from 'url';
-import './security-restrictions';
+import './ipcMain';
+
 
 const isSingleInstance = app.requestSingleInstanceLock();
 const isDevelopment = import.meta.env.MODE === 'development';
@@ -25,14 +26,16 @@ if (isDevelopment) {
     .catch(e => console.error('Failed install extension:', e));
 }
 
-let mainWindow: BrowserWindow | null = null;
+let mainWindow = null;
 
 const createWindow = async () => {
   mainWindow = new BrowserWindow({
     show: false, // Use 'ready-to-show' event to show window
     webPreferences: {
       nativeWindowOpen: true,
-      webviewTag: false, // The webview tag is not recommended. Consider alternatives like iframe or Electron's BrowserView. https://www.electronjs.org/docs/latest/api/webview-tag#warning
+      // nodeIntegration: true,
+      width: 800,
+      height: 600,
       preload: join(__dirname, '../../preload/dist/index.cjs'),
     },
   });
@@ -64,6 +67,52 @@ const createWindow = async () => {
   await mainWindow.loadURL(pageUrl);
 };
 
+ app.on('web-contents-created', (_event, contents) => {
+
+  /**
+   * Block navigation to origins not on the allowlist.
+   *
+   * Navigation is a common attack vector. If an attacker can convince the app to navigate away
+   * from its current page, they can possibly force the app to open web sites on the Internet.
+   *
+   * @see https://www.electronjs.org/docs/latest/tutorial/security#13-disable-or-limit-navigation
+   */
+  contents.on('will-navigate', (event, url) => {
+    const allowedOrigins =
+      new Set(); // Do not use insecure protocols like HTTP. https://www.electronjs.org/docs/latest/tutorial/security#1-only-load-secure-content
+    const { origin, hostname } = new URL(url);
+    const isDevLocalhost = isDevelopment && hostname === 'localhost'; // permit live reload of index.html
+    if (!allowedOrigins.has(origin) && !isDevLocalhost){
+      console.warn('Blocked navigating to an unallowed origin:', origin);
+      event.preventDefault();
+    }
+  });
+
+  /**
+  * Hyperlinks to allowed sites open in the default browser.
+  *
+  * The creation of new `webContents` is a common attack vector. Attackers attempt to convince the app to create new windows,
+  * frames, or other renderer processes with more privileges than they had before; or with pages opened that they couldn't open before.
+  * You should deny any unexpected window creation.
+  *
+  * @see https://www.electronjs.org/docs/latest/tutorial/security#14-disable-or-limit-creation-of-new-windows
+  * @see https://www.electronjs.org/docs/latest/tutorial/security#15-do-not-use-openexternal-with-untrusted-content
+  */
+  contents.setWindowOpenHandler(({ url }) => {
+    const allowedOrigins =
+      new Set([ // Do not use insecure protocols like HTTP. https://www.electronjs.org/docs/latest/tutorial/security#1-only-load-secure-content
+      'https://vitejs.dev',
+      'https://github.com',
+      'https://v3.vuejs.org']);
+    const { origin } = new URL(url);
+    if (allowedOrigins.has(origin)){
+      shell.openExternal(url);
+    } else {
+      console.warn('Blocked the opening of an unallowed origin:', origin);
+    }
+    return { action: 'deny' };
+  });
+});
 
 
 app.on('second-instance', () => {
