@@ -1,5 +1,6 @@
 // 地图
-import * as maptalks from 'maptalks/dist/maptalks.es.js';
+import * as maptalks from 'maptalks';
+import TileLayerCollection from './TileLayerCollection/TileLayerCollection';
 class TMap{
   constructor(id) {
     this.createMap(id);
@@ -20,6 +21,16 @@ class TMap{
       }),
     });
     this.map = map;
+  }
+  switchBaseLayer(param) {
+    const methodName = 'get' + param.parent + 'TileLayer';
+    const style = param.layer.value;
+    const baseLayer = TileLayerCollection[methodName](param.parent + '-' + style, { style: style, subdomains: param.layer.subdomains });
+    this.map.removeBaseLayer(this.map.getBaseLayer());
+    this.map.setBaseLayer(baseLayer);
+    this.map.setSpatialReference({
+      projection : param.layer.prejection,
+    });
   }
   // 绘制矩形、编辑矩形位置
   startDraw() {}
