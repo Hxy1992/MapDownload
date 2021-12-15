@@ -1,8 +1,13 @@
 <template>
   <div id="map" />
-  <button class="my-button" @click="setFolder">
-    选择文件夹
-  </button>
+  <div class="box-controls">
+    <button
+      class="my-button"
+      @click="setFolder"
+    >
+      选择文件夹
+    </button>
+  </div>
 </template>
 
 <script>
@@ -37,7 +42,14 @@ export default defineComponent({
   width: 100%;
   height: 100%;
 }
-.my-button{
+.box-controls{
   position: absolute;
+  left: 10px;
+  top: 10px;
+  background-color: white;
+  box-shadow: 0px 2px 4px 0px rgb(54 58 80 / 30%);
+  width: 200px;
+  padding: 8px;
+  display: flex;
 }
 </style>
