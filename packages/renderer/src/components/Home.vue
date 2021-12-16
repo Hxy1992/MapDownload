@@ -1,12 +1,6 @@
 <template>
   <div id="map" />
   <div class="box-controls">
-    <!-- <button
-      class="my-button"
-      @click="setFolder"
-    >
-      选择文件夹
-    </button> -->
     <div
       class="items layers"
       title="切换地图源"
@@ -18,9 +12,21 @@
       title="绘制矩形"
       @click="drawRect"
     />
+    <div class="splitline" />
+    <div
+      class="items download"
+      title="下载地图"
+      @click="showSave"
+    />
     <layer-control
       :visible="layersVisible"
       @choose="chooseLayers"
+    />
+    <save-diablog
+      :visible="saveVisible"
+      :download-extent="downloadExtent"
+      @ok="save"
+      @cancel="cancelSave"
     />
   </div>
 </template>
@@ -29,12 +35,15 @@
 import {defineComponent} from 'vue';
 import TMap from '../utils/t-map.js';
 import LayerControl from './LayerControl.vue';
+import SaveDiablog from './Save.vue';
+import FileSave from '../utils/file-save.js';
 // eslint-disable-next-line
 let map
 export default defineComponent({
   name: 'HomeMain',
   components: {
     LayerControl,
+    SaveDiablog,
   },
   setup() {
 
@@ -43,6 +52,8 @@ export default defineComponent({
     return {
       layersVisible: false,
       isDrawing: false,
+      saveVisible: false,
+      downloadExtent: {},
     };
   },
   mounted() {
@@ -58,10 +69,28 @@ export default defineComponent({
     },
     drawRect() {
       this.isDrawing = !this.isDrawing;
+      if (this.isDrawing) {
+        map.startDraw();
+      } else {
+        map.endDraw();
+      }
     },
-    async setFolder() {
-      const list = await window.electron.ipcRenderer.invoke('show-dialog');
-      console.log(list);
+    showSave() {
+      this.downloadExtent = map.getDownloadExtent();
+      if (!this.downloadExtent) {
+        alert('获取下载范围错误');
+        return;
+      }
+      this.saveVisible = true;
+    },
+    save(val) {
+      this.saveVisible = false;
+      const mapConfig = map.getBaseMapConfig();
+      val.mapConfig = mapConfig;
+      new FileSave(val);
+    },
+    cancelSave() {
+      this.saveVisible = false;
     },
   },
 });
@@ -95,14 +124,16 @@ export default defineComponent({
     background-position: center center;
     cursor: pointer;
     &.layers{
-      background-image: url(/@/assets/earth.png);
+      background-image: url(/@/assets/layers.png);
     }
     &.draw{
-      border: 2px solid #666666;
-      border-radius: 5px;
+      background-image: url(/@/assets/rect.png);
       &.isdraw{
-        border-color: aquamarine;
+        background-image: url(/@/assets/rect2.png);
       }
+    }
+    &.download{
+      background-image: url(/@/assets/download.png);
     }
   }
   .splitline{

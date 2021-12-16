@@ -1,6 +1,15 @@
 // 地图
 import * as maptalks from 'maptalks';
 import TileLayerCollection from './TileLayerCollection/TileLayerCollection';
+
+const defaultTileOption = {
+  maxCacheSize: 1000,
+  tileRetryCount: 3, // 失败重试次数
+  cascadeTiles: false,
+  renderer: 'gl', // gl/canvas gl瓦片需跨域支持；canvas不需要
+  debug: false, // 绘制瓦片边框
+  crossOrigin: null, // 瓦片跨域
+};
 class TMap{
   constructor(id) {
     this.createMap(id);
@@ -17,15 +26,20 @@ class TMap{
       baseLayer: new maptalks.TileLayer('base', {
         'urlTemplate' : 'https://gss{s}.bdstatic.com/8bo_dTSlRsgBo1vgoIiO_jowehsv/tile/?qt=tile&x={x}&y={y}&z={z}&styles=pl&scaler=1&udt=20170927',
         'subdomains':[0, 1, 2, 3],
-        // 'attribution' :  '&copy; <a target="_blank" href="http://map.baidu.com">Baidu</a>',
+        ...defaultTileOption,
       }),
+      attribution: false,
     });
     this.map = map;
   }
   switchBaseLayer(param) {
     const methodName = 'get' + param.parent + 'TileLayer';
     const style = param.layer.value;
-    const baseLayer = TileLayerCollection[methodName](param.parent + '-' + style, { style: style, subdomains: param.layer.subdomains });
+    const baseLayer = TileLayerCollection[methodName](param.parent + '-' + style, {
+      style: style,
+      subdomains: param.layer.subdomains,
+      ...defaultTileOption,
+    });
     this.map.removeBaseLayer(this.map.getBaseLayer());
     this.map.setBaseLayer(baseLayer);
     this.map.setSpatialReference({
@@ -33,11 +47,52 @@ class TMap{
     });
   }
   // 绘制矩形、编辑矩形位置
-  startDraw() {}
+  startDraw() {
+    const map = this.map;
+    const isFirst = typeof this._drawLayer === 'undefined';
+    if (isFirst) {
+      const layer = new maptalks.VectorLayer('vector').addTo(map);
+      this._drawLayer = layer;
+      const drawTool = new maptalks.DrawTool({
+        mode: 'Rectangle',
+        symbol : {
+        'lineColor' : '#1296db',
+        'lineWidth' : 3,
+        },
+      }).addTo(map).enable();
+      this._drawTool = drawTool;
+      // eslint-disable-next-line
+      drawTool.on('drawstart', function (param) {
+        layer.clear();
+      });
+      drawTool.on('drawend', function (param) {
+        layer.addGeometry(param.geometry);
+      });
+    } else {
+      const drawTool = this._drawTool;
+      drawTool.enable();
+    }
+  }
   // 结束绘制
-  endDraw() {}
+  endDraw() {
+    if (this._drawLayer) {
+      this._drawLayer.clear();
+      this._drawTool.disable();
+    }
+  }
   // 获取下载范围
-  // 获取下载瓦片
+  getDownloadExtent() {
+    if (!this._drawLayer || this._drawLayer.getCount() !== 1) return null;
+    return this._drawLayer.getGeometries()[0].getExtent();
+  }
+  // 获取瓦片图层参数
+  getBaseMapConfig() {
+    const baseMap = this.map.getBaseLayer();
+    return {
+      config: baseMap.config(),
+      projection: baseMap.getProjection(),
+    };
+  }
 }
 
 export default TMap;
