@@ -10,6 +10,7 @@ const defaultTileOption = {
   renderer: 'gl', // gl/canvas gl瓦片需跨域支持；canvas不需要
   debug: false, // 绘制瓦片边框
   crossOrigin: null, // 瓦片跨域
+  repeatWorld: false,
 };
 class TMap{
   constructor(id) {
