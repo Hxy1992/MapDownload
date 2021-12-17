@@ -40,9 +40,10 @@ class TMap{
     const style = param.layer.value;
     const baseLayer = TileLayerCollection[methodName](param.parent + '-' + style, {
       style: style,
-      subdomains: param.layer.subdomains,
-      attribution: param.layer.attribution,
       ...defaultTileOption,
+      // subdomains: param.layer.subdomains,
+      // attribution: param.layer.attribution,
+      ...param.layer.exteral,
     });
     this.map.removeBaseLayer(this.map.getBaseLayer());
     this.map.setBaseLayer(baseLayer);

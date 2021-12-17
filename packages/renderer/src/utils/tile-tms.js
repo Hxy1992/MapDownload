@@ -35,7 +35,6 @@ class TileTMS {
     const downloadPath = this.rootPath + '\\';
 
     // 下载范围
-    // TODO 经纬度为负数时，计算瓦片有问题
     const zmin = this.minZoom;
     const zmax = this.maxZoom + 1;
     const south_edge = this.mapExtent.ymin;

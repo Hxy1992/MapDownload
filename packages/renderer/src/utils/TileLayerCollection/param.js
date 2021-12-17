@@ -1,5 +1,5 @@
 const mapboxKey = 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejh2N21nMzAxMmQzMnA5emRyN2lucW0ifQ.jSE-g2vsn48Ry928pqylcg';
-const tdtKey = 'fb1bfb9e06cd7681813a42f4c934e1ea';
+const tdtKey = '6901643c38b65f1f9770196343cf72b2';
 
 const params = {
     TDT: {
