@@ -50,4 +50,5 @@ var map = new maptalks.Map('map', {
 
 # TODO
 
-+ 只有高德可以正常下载，其他的瓦片规则不对
++ 百度瓦片下载
++ 优化交互和样式

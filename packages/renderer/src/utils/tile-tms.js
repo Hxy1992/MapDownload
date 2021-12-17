@@ -22,9 +22,10 @@ class TileTMS {
     this.maxZoom = data.maxZoom;
     this.minZoom = data.minZoom;
     this.mapExtent = data.extent;
-    this.projection = data.mapConfig.projection.code; // BAIDU,EPSG:4326,EPSG:3857
-    this.urlTemplate = data.mapConfig.config.urlTemplate; // BAIDU,EPSG:4326,EPSG:3857
+    // this.projection = data.mapConfig.projection.code; // BAIDU,EPSG:4326,EPSG:3857
+    this.urlTemplate = data.mapConfig.config.urlTemplate;
     this.apiEnsureDirSync = apiEnsureDirSync;
+    this.titleLayer = data.mapConfig.titleLayer;
     setState(true);
     this.calcTiles();
     this.download();
@@ -42,7 +43,7 @@ class TileTMS {
     const west_edge = this.mapExtent.xmin;
     const east_edge = this.mapExtent.xmax;
     // 下载地址
-    const baseUrl = this.urlTemplate;
+    // const baseUrl = this.urlTemplate;
     const pictureType = '.png';
     // 遍历URL，获取数据
     const list = [];
@@ -60,7 +61,8 @@ class TileTMS {
         const temppath = downloadPath + z + '\\' + x;
         this.apiEnsureDirSync(temppath);
         for (let y = minLat; y < maxLat; y++) {
-          const str3 = baseUrl.replace('{z}', z).replace('{x}', x).replace('{y}', y);
+          // const str3 = baseUrl.replace('{z}', z).replace('{x}', x).replace('{y}', y);
+          const str3 = this.titleLayer.getTileUrl(x, y, z);
           const path2 = temppath + '\\' + y + pictureType;
           list.push({zoom: z, url:str3, savePath:path2});
         }

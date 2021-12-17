@@ -20,8 +20,8 @@ class TMap{
     const map = new maptalks.Map(id, {
       center: [105.08052356963802, 36.04231948670001],
       zoom: 5,
-      minZoom:1,
-      maxZoom:19,
+      // minZoom:1,
+      // maxZoom:19,
       // spatialReference:{
       //   projection : 'baidu',
       // },
@@ -97,11 +97,13 @@ class TMap{
       return {
         config: layer.config(),
         projection: baseMap.getProjection(),
+        titleLayer: layer,
       };
     } else {
       return {
         config: baseMap.config(),
         projection: baseMap.getProjection(),
+        titleLayer: baseMap,
       };
     }
   }

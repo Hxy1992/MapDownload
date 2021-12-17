@@ -1,5 +1,6 @@
 // 地图
 import TileTMS from './tile-tms';
+import TileBaidu from './tile-baidu';
 import { getState } from './progress';
 class FileSave{
   constructor(data) {
@@ -28,8 +29,8 @@ class FileSave{
   downloadTms(data) {
     new TileTMS(data, this.saveImage, this.ensureDirSync);
   }
-  downloadBaidu() {
-
+  downloadBaidu(data) {
+    new TileBaidu(data, this.saveImage, this.ensureDirSync);
   }
 }
 
