@@ -7,7 +7,12 @@ const apiKey = 'electron';
  */
 const api = {
   versions: process.versions,
-  ipcRenderer,
+  ipcRenderer: { ...ipcRenderer },
+  imageDownloadDone: (callback) => {
+    ipcRenderer.on('imageDownloadDone', (event, state) => {
+      callback(state);
+    });
+  },
 };
 
 /**

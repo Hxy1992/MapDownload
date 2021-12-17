@@ -1,8 +1,12 @@
 // 地图
 import TileTMS from './tile-tms';
+import { getState } from './progress';
 class FileSave{
   constructor(data) {
     const projection = data.mapConfig.projection.code; // BAIDU,EPSG:4326,EPSG:3857
+    if (getState()) {
+      return alert('下载任务执行中，请稍后..');
+    }
     if (projection === 'BAIDU') {
       this.downloadBaidu(data);
     } else {
@@ -16,6 +20,7 @@ class FileSave{
     // };
     // param.savePath = this.rootPath + '\\421.png';
     window.electron.ipcRenderer.send('save-image', param);
+
   }
   ensureDirSync(path) {
     window.electron.ipcRenderer.send('ensure-dir', path);

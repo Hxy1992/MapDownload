@@ -19,3 +19,35 @@ npm run compile
 
 ```
 ---
+
+## 下载瓦片加载方式
+
+### Cesium
+
+```javascript
+
+viewer.imageryLayers.addImageryProvider(new Cesium.UrlTemplateImageryProvider({
+  url: 'http://localhost:7099/{z}/{x}/{y}.png'
+}))
+
+```
+
+### maptalks
+
+```javascript
+
+var map = new maptalks.Map('map', {
+  center: [105.08052356963802, 36.04231948670001],
+  zoom: 5,
+  minZoom:1,
+  maxZoom:19,
+  baseLayer: new maptalks.TileLayer('base', {
+    'urlTemplate' : 'http://localhost:7099/{z}/{x}/{y}.png'
+  })
+});
+
+```
+
+# TODO
+
++ 只有高德可以正常下载，其他的瓦片规则不对

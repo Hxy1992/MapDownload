@@ -1,6 +1,7 @@
 // 地图
 import * as maptalks from 'maptalks';
 import TileLayerCollection from './TileLayerCollection/TileLayerCollection';
+import {defaultMap} from './layer-list';
 
 const defaultTileOption = {
   maxCacheSize: 1000,
@@ -20,17 +21,18 @@ class TMap{
       zoom: 5,
       minZoom:1,
       maxZoom:19,
-      spatialReference:{
-        projection : 'baidu',
-      },
-      baseLayer: new maptalks.TileLayer('base', {
-        'urlTemplate' : 'https://gss{s}.bdstatic.com/8bo_dTSlRsgBo1vgoIiO_jowehsv/tile/?qt=tile&x={x}&y={y}&z={z}&styles=pl&scaler=1&udt=20170927',
-        'subdomains':[0, 1, 2, 3],
-        ...defaultTileOption,
-      }),
-      attribution: false,
+      // spatialReference:{
+      //   projection : 'baidu',
+      // },
+      // baseLayer: new maptalks.TileLayer('base', {
+      //   'urlTemplate' : 'https://gss{s}.bdstatic.com/8bo_dTSlRsgBo1vgoIiO_jowehsv/tile/?qt=tile&x={x}&y={y}&z={z}&styles=pl&scaler=1&udt=20170927',
+      //   'subdomains':[0, 1, 2, 3],
+      //   ...defaultTileOption,
+      // }),
+      // attribution: true,
     });
     this.map = map;
+    this.switchBaseLayer(defaultMap());
   }
   switchBaseLayer(param) {
     const methodName = 'get' + param.parent + 'TileLayer';
@@ -38,6 +40,7 @@ class TMap{
     const baseLayer = TileLayerCollection[methodName](param.parent + '-' + style, {
       style: style,
       subdomains: param.layer.subdomains,
+      attribution: param.layer.attribution,
       ...defaultTileOption,
     });
     this.map.removeBaseLayer(this.map.getBaseLayer());
@@ -88,10 +91,18 @@ class TMap{
   // 获取瓦片图层参数
   getBaseMapConfig() {
     const baseMap = this.map.getBaseLayer();
-    return {
-      config: baseMap.config(),
-      projection: baseMap.getProjection(),
-    };
+    if (baseMap instanceof maptalks.GroupTileLayer) {
+      const layer = baseMap.layers[0];
+      return {
+        config: layer.config(),
+        projection: baseMap.getProjection(),
+      };
+    } else {
+      return {
+        config: baseMap.config(),
+        projection: baseMap.getProjection(),
+      };
+    }
   }
 }
 

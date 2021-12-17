@@ -23,7 +23,7 @@ class TileLayerCollection {
             baselayers.push(baseLayer1);
         }
 
-        return new GroupTileLayer(id, baselayers);
+        return new GroupTileLayer(id, baselayers, {attribution: options.attribution});
 
     }
 
@@ -45,7 +45,7 @@ class TileLayerCollection {
             options.style = options.style + '_Label';
             const baseLayer1 = new AmapTileLayer(Utils.uuid(), options);
             baseLayers.push(baseLayer1);
-            return new GroupTileLayer(id, baseLayers);
+            return new GroupTileLayer(id, baseLayers, {attribution: options.attribution});
         } else {
             return new AmapTileLayer(id, options);
         }
@@ -61,7 +61,7 @@ class TileLayerCollection {
             options.style = options.style + '_Label';
             const baseLayer1 = new TencentTileLayer(Utils.uuid(), options);
             baseLayers.push(baseLayer1);
-            return new GroupTileLayer(id, baseLayers);
+            return new GroupTileLayer(id, baseLayers, {attribution: options.attribution});
         }
     }
 

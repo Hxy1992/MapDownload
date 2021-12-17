@@ -29,6 +29,32 @@
       @cancel="cancelSave"
     />
   </div>
+  <div
+    ref="container"
+    class="box-progress"
+  >
+    <progress
+      ref="progress"
+      class="progress"
+      value="0"
+      max="100"
+    />
+    <div class="item">
+      已下载:<span
+        ref="progressSuccess"
+        class="success"
+      />
+    </div>
+    <div class="item">
+      失败:<span
+        ref="progressError"
+        class="error"
+      />
+    </div>
+    <button @click="closeProgress">
+      关闭
+    </button>
+  </div>
 </template>
 
 <script>
@@ -37,6 +63,7 @@ import TMap from '../utils/t-map.js';
 import LayerControl from './LayerControl.vue';
 import SaveDiablog from './Save.vue';
 import FileSave from '../utils/file-save.js';
+import { setProgressDom, showProgress } from '../utils/progress';
 // eslint-disable-next-line
 let map
 export default defineComponent({
@@ -58,10 +85,16 @@ export default defineComponent({
   },
   mounted() {
     map = new TMap('map');
+    setProgressDom({
+      success: this.$refs['progressSuccess'],
+      error: this.$refs['progressError'],
+      progress: this.$refs['progress'],
+      container: this.$refs['container'],
+    });
   },
   methods: {
     showLayers() {
-      this.layersVisible = true;
+      this.layersVisible = !this.layersVisible;
     },
     chooseLayers(data) {
       this.layersVisible = false;
@@ -78,7 +111,7 @@ export default defineComponent({
     showSave() {
       this.downloadExtent = map.getDownloadExtent();
       if (!this.downloadExtent) {
-        alert('获取下载范围错误');
+        alert('获取下载范围错误，请重新绘制下载范围');
         return;
       }
       this.saveVisible = true;
@@ -91,6 +124,9 @@ export default defineComponent({
     },
     cancelSave() {
       this.saveVisible = false;
+    },
+    closeProgress() {
+      showProgress(false);
     },
   },
 });
@@ -143,5 +179,21 @@ export default defineComponent({
     background-color: #999999;
   }
 }
-
+.box-progress{
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  background-color: white;
+  box-shadow: 0px 2px 4px 0px rgb(54 58 80 / 30%);
+  width: 200px;
+  padding: 8px;
+  z-index: 100;
+  display: none;
+  .progress{
+    width: 100%;
+  }
+  .item{
+    text-align: left;
+  }
+}
 </style>

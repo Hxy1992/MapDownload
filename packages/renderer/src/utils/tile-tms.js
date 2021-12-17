@@ -1,18 +1,20 @@
 // 瓦片转换
-
+import { setState, setProgress } from './progress';
 // 经纬度转瓦片行列号
 function long2tile(lon, zoom) {
   return (Math.floor((lon + 180) / 360 * Math.pow(2, zoom)));
 }
 
 // 经纬度转瓦片行列号Google
+// eslint-disable-next-line
 function lat2tileGoogle(lat, zoom) {
   return (Math.floor((1 - Math.log(Math.tan(lat * Math.PI / 180) + 1 / Math.cos(lat * Math.PI / 180)) / Math.PI) / 2 * Math.pow(2, zoom)));
 }
 // 经纬度转瓦片行列号TMS
-// function lat2tile(lat, zoom) {
-//   return ((1 << zoom) - (Math.floor((1 - Math.log(Math.tan(lat * Math.PI / 180) + 1 / Math.cos(lat * Math.PI / 180)) / Math.PI) / 2 * Math.pow(2, zoom))) - 1);
-// }
+// eslint-disable-next-line
+function lat2tileTMS(lat, zoom) {
+  return ((1 << zoom) - (Math.floor((1 - Math.log(Math.tan(lat * Math.PI / 180) + 1 / Math.cos(lat * Math.PI / 180)) / Math.PI) / 2 * Math.pow(2, zoom))) - 1);
+}
 class TileTMS {
   constructor(data, apiDownload, apiEnsureDirSync) {
     this.apiDownload = apiDownload;
@@ -23,9 +25,11 @@ class TileTMS {
     this.projection = data.mapConfig.projection.code; // BAIDU,EPSG:4326,EPSG:3857
     this.urlTemplate = data.mapConfig.config.urlTemplate; // BAIDU,EPSG:4326,EPSG:3857
     this.apiEnsureDirSync = apiEnsureDirSync;
+    setState(true);
+    this.calcTiles();
     this.download();
   }
-  download() {
+  calcTiles() {
     // 当前绝对路径
     const downloadPath = this.rootPath + '\\';
 
@@ -40,12 +44,8 @@ class TileTMS {
     // 下载地址
     const baseUrl = this.urlTemplate;
     const pictureType = '.png';
-    // 下载统计
-    let img_count = 0;
-    let img_success = 0;
-    let img_error = 0;
     // 遍历URL，获取数据
-
+    const list = [];
     for (let z = zmin; z < zmax; z++) {
       const top_tile = lat2tileGoogle(north_edge, z);
       const left_tile = long2tile(west_edge, z);
@@ -56,36 +56,47 @@ class TileTMS {
       let minLat = Math.min(bottom_tile, top_tile);
       if (minLat < 0) minLat = 0;
       const maxLat = Math.max(bottom_tile, top_tile);
-      let temp_count = 1;
-      let temp_level_pro = '正在下载瓦片层级：' + z + '/' + zmax;
-      console.log(temp_level_pro);
       for (let x = minLong; x < maxLong; x++) {
         const temppath = downloadPath + z + '\\' + x;
         this.apiEnsureDirSync(temppath);
         for (let y = minLat; y < maxLat; y++) {
           const str3 = baseUrl.replace('{z}', z).replace('{x}', x).replace('{y}', y);
           const path2 = temppath + '\\' + y + pictureType;
-          img_count = img_count + 1;
-          try {
-            this.apiDownload({url:str3, savePath:path2});
-            temp_count = temp_count + 1;
-          }
-          catch (e) {
-            img_error = img_error + 1;
-            console.error(e);
-          }
+          list.push({zoom: z, url:str3, savePath:path2});
         }
       }
     }
-
-    img_success = img_count - img_error;
-
-    console.log('***********************************');
-    console.log('下载完成:');
-    console.log('瓦片总数：'+ (img_count));
-    console.log('下载成功：'+ (img_success));
-    console.log('下载失败：'+ (img_error));
-    console.log('***********************************');
+    this.list = list;
+  }
+  download() {
+    let index = 0;
+    const length = this.list.length;
+    if (length === 0) return;
+    const list = this.list;
+    const apiDownload = this.apiDownload;
+    const statistics = {success: 0, error: 0, percentage: 0, count: length};
+    const download = () => {
+      if (index >= length) {
+        statistics.percentage = 100;
+        setProgress(statistics);
+        setState(false);
+        return;
+      }
+      const item = list[index];
+      statistics.percentage = Number((index / length * 100).toFixed(2));
+      apiDownload(item);
+      index++;
+    };
+    download();
+    window.electron.imageDownloadDone(state => {
+      if (state.state === 'completed') {
+        statistics.success++;
+      } else {
+        statistics.error++;
+      }
+      setProgress(statistics);
+      download();
+    });
   }
 }
 

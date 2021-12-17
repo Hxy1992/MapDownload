@@ -1,7 +1,7 @@
 import {app, BrowserWindow, shell} from 'electron';
 import {join} from 'path';
 import {URL} from 'url';
-import './ipcMain';
+import  { ipcHandle } from './ipcMain';
 
 
 const isSingleInstance = app.requestSingleInstanceLock();
@@ -65,6 +65,8 @@ const createWindow = async () => {
 
 
   await mainWindow.loadURL(pageUrl);
+
+  ipcHandle(mainWindow);
 };
 
  app.on('web-contents-created', (_event, contents) => {
