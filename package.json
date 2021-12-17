@@ -2,7 +2,7 @@
   "name": "map-download",
   "description": "高德地图、百度地图（包括百度自定义地图）、腾讯地图、OpenStreetMap、CartoDb、ArcGIS在线地图的下载",
   "author": "Hxy1992<https://github.com/Hxy1992>",
-  "repository": "https://github.com/Hxy1992/MapDownload2",
+  "repository": "https://github.com/Hxy1992/MapDownload",
   "private": true,
   "engines": {
     "node": ">=v16.13",
