@@ -81,6 +81,7 @@ class TileTMS {
         statistics.percentage = 100;
         setProgress(statistics);
         setState(false);
+        alert(`下载完成。下载成功${statistics.success}，下载失败${statistics.error}`);
         return;
       }
       const item = list[index];

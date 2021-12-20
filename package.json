@@ -3,6 +3,7 @@
   "description": "高德地图、百度地图（包括百度自定义地图）、腾讯地图、OpenStreetMap、CartoDb、ArcGIS在线地图的下载",
   "author": "Hxy1992<https://github.com/Hxy1992>",
   "repository": "https://github.com/Hxy1992/MapDownload",
+  "version": "v1.0.0",
   "private": true,
   "engines": {
     "node": ">=v16.13",
@@ -40,6 +41,7 @@
   "dependencies": {
     "electron-updater": "4.6.2",
     "maptalks": "^1.0.0-beta.7",
+    "marked": "^4.0.8",
     "vue": "3.2.22",
     "vue-router": "4.0.12"
   }

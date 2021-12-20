@@ -2,7 +2,7 @@
   <div id="map" />
   <div class="box-controls">
     <div
-      class="items layers"
+      :class="{items: true, layers: true, layersVisible: layersVisible}"
       title="切换地图源"
       @click="showLayers"
     />
@@ -18,6 +18,13 @@
       title="下载地图"
       @click="showSave"
     />
+    <div class="splitline" />
+    <div
+      class="items help"
+      title="帮助"
+      @click="showHelp(true)"
+    />
+
     <layer-control
       :visible="layersVisible"
       @choose="chooseLayers"
@@ -27,6 +34,10 @@
       :download-extent="downloadExtent"
       @ok="save"
       @cancel="cancelSave"
+    />
+    <help-diablog
+      :visible="helpVisible"
+      @ok="showHelp(false)"
     />
   </div>
   <div
@@ -64,6 +75,7 @@ import LayerControl from './LayerControl.vue';
 import SaveDiablog from './Save.vue';
 import FileSave from '../utils/file-save.js';
 import { setProgressDom, showProgress } from '../utils/progress';
+import HelpDiablog from './Help.vue';
 // eslint-disable-next-line
 let map
 export default defineComponent({
@@ -71,6 +83,7 @@ export default defineComponent({
   components: {
     LayerControl,
     SaveDiablog,
+    HelpDiablog,
   },
   setup() {
 
@@ -81,6 +94,7 @@ export default defineComponent({
       isDrawing: false,
       saveVisible: false,
       downloadExtent: {},
+      helpVisible: false,
     };
   },
   mounted() {
@@ -128,6 +142,9 @@ export default defineComponent({
     closeProgress() {
       showProgress(false);
     },
+    showHelp(val) {
+      this.helpVisible = val;
+    },
   },
 });
 </script>
@@ -145,11 +162,11 @@ export default defineComponent({
 }
 .box-controls{
   position: absolute;
-  left: 10px;
+  left: 70px;
   top: 10px;
   background-color: white;
   box-shadow: 0px 2px 4px 0px rgb(54 58 80 / 30%);
-  width: 200px;
+  // width: 200px;
   padding: 8px;
   display: flex;
   .items{
@@ -161,6 +178,9 @@ export default defineComponent({
     cursor: pointer;
     &.layers{
       background-image: url(/@/assets/layers.png);
+      &.layersVisible{
+        background-image: url(/@/assets/layers2.png);
+      }
     }
     &.draw{
       background-image: url(/@/assets/rect.png);
@@ -170,6 +190,9 @@ export default defineComponent({
     }
     &.download{
       background-image: url(/@/assets/download.png);
+    }
+    &.help{
+      background-image: url(/@/assets/help.png);
     }
   }
   .splitline{
