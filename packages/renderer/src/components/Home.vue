@@ -20,6 +20,12 @@
     />
     <div class="splitline" />
     <div
+      class="items set"
+      title="设置"
+      @click="showSet(true)"
+    />
+    <div class="splitline" />
+    <div
       class="items help"
       title="帮助"
       @click="showHelp(true)"
@@ -28,6 +34,7 @@
     <layer-control
       :visible="layersVisible"
       @choose="chooseLayers"
+      @show-mapkey="showSet(true), layersVisible = false"
     />
     <save-diablog
       :visible="saveVisible"
@@ -38,6 +45,10 @@
     <help-diablog
       :visible="helpVisible"
       @ok="showHelp(false)"
+    />
+    <map-key
+      :visible="setVisible"
+      @hide="showSet(false)"
     />
   </div>
   <div
@@ -76,6 +87,7 @@ import SaveDiablog from './Save.vue';
 import FileSave from '../utils/file-save.js';
 import { setProgressDom, showProgress } from '../utils/progress';
 import HelpDiablog from './Help.vue';
+import MapKey from './MapKey.vue';
 // eslint-disable-next-line
 let map
 export default defineComponent({
@@ -84,6 +96,7 @@ export default defineComponent({
     LayerControl,
     SaveDiablog,
     HelpDiablog,
+    MapKey,
   },
   setup() {
 
@@ -95,6 +108,7 @@ export default defineComponent({
       saveVisible: false,
       downloadExtent: {},
       helpVisible: false,
+      setVisible: false,
     };
   },
   mounted() {
@@ -145,6 +159,9 @@ export default defineComponent({
     showHelp(val) {
       this.helpVisible = val;
     },
+    showSet(val) {
+      this.setVisible = val;
+    },
   },
 });
 </script>
@@ -193,6 +210,9 @@ export default defineComponent({
     }
     &.help{
       background-image: url(/@/assets/help.png);
+    }
+    &.set{
+      background-image: url(/@/assets/set.png);
     }
   }
   .splitline{

@@ -31,6 +31,7 @@
 <script>
 import {defineComponent} from 'vue';
 import LayerList from '/@/utils/layer-list.js';
+import {getKeys} from '/@/utils/map-key.js';
 export default defineComponent({
   name: 'LayerControl',
   props: {
@@ -51,6 +52,12 @@ export default defineComponent({
   },
   methods: {
     choose(item, child) {
+      const {mapboxKey, tdtKey} = getKeys();
+      if ((item.value === 'Mapbox' && !mapboxKey) || (item.value === 'Tdt' && !tdtKey)) {
+        // eslint-disable-next-line
+        this.$emit('showMapkey');
+        return;
+      }
       // eslint-disable-next-line
       this.$emit('choose', { parent: item.value, layer: child });
     },

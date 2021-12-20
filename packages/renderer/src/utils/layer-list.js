@@ -268,27 +268,141 @@ const mapList = [
       },
     ],
   },
-  // {
-  //   label: '天地图',
-  //   value: 'Tdt',
-  //   children: [
-  //     {
-  //       label: '普通',
-  //       value: 'Normal',
-  //       // prejection: 'EPSG:4326',
-  //       // exteral: {
-  //       //   tileSystem: [1, -1, -180, 90],
-  //       //   subdomains: ['1', '2', '3', '4', '5'],
-  //       //   attribution: '天地图-普通',
-  //       // },
-  //       prejection: 'EPSG:3857',
-  //       exteral: {
-  //         subdomains: ['0', '1', '2'],
-  //         attribution: '天地图-普通',
-  //       },
-  //     },
-  //   ],
-  // },
+  {
+    label: '天地图',
+    value: 'Tdt',
+    children: [
+      {
+        label: '普通',
+        value: 'Normal',
+        prejection: 'EPSG:3857',
+        exteral: {
+          subdomains: ['0', '1', '2'],
+          attribution: '天地图-普通地图',
+        },
+      },
+      {
+        label: '卫星',
+        value: 'Satellite',
+        prejection: 'EPSG:3857',
+        exteral: {
+          subdomains: ['0', '1', '2'],
+          attribution: '天地图-卫星地图',
+        },
+      },
+      {
+        label: '地形',
+        value: 'Terrain',
+        prejection: 'EPSG:3857',
+        exteral: {
+          subdomains: ['0', '1', '2'],
+          attribution: '天地图-地形图',
+        },
+      },
+    ],
+  },
+  {
+    label: 'Mapbox',
+    value: 'Mapbox',
+    children: [
+      {
+        label: '街景',
+        value: 'Streets',
+        prejection: 'EPSG:3857',
+        exteral: {
+          attribution: 'Mapbox-街景',
+        },
+      },
+      {
+        label: '暗黑',
+        value: 'Dark',
+        prejection: 'EPSG:3857',
+        exteral: {
+          attribution: 'Mapbox-暗黑',
+        },
+      },
+      {
+        label: '浅黑',
+        value: 'LightDark',
+        prejection: 'EPSG:3857',
+        exteral: {
+          attribution: 'Mapbox-浅黑',
+        },
+      },
+      {
+        label: '卫星',
+        value: 'Satellite',
+        prejection: 'EPSG:3857',
+        exteral: {
+          attribution: 'Mapbox-卫星',
+        },
+      },
+      {
+        label: '浅色',
+        value: 'Light',
+        prejection: 'EPSG:3857',
+        exteral: {
+          attribution: 'Mapbox-浅色',
+        },
+      },
+      {
+        label: 'Emerald',
+        value: 'Emerald',
+        prejection: 'EPSG:3857',
+        exteral: {
+          attribution: 'Mapbox-Emerald',
+        },
+      },
+      {
+        label: '白色',
+        value: 'White',
+        prejection: 'EPSG:3857',
+        exteral: {
+          attribution: 'Mapbox-白色',
+        },
+      },
+      {
+        label: '红色',
+        value: 'Red',
+        prejection: 'EPSG:3857',
+        exteral: {
+          attribution: 'Mapbox-红色',
+        },
+      },
+      {
+        label: 'Outdoors',
+        value: 'Outdoors',
+        prejection: 'EPSG:3857',
+        exteral: {
+          attribution: 'Mapbox-Outdoors',
+        },
+      },
+      {
+        label: 'StreetsSatellite',
+        value: 'StreetsSatellite',
+        prejection: 'EPSG:3857',
+        exteral: {
+          attribution: 'Mapbox-StreetsSatellite',
+        },
+      },
+      {
+        label: 'Comic',
+        value: 'Comic',
+        prejection: 'EPSG:3857',
+        exteral: {
+          attribution: 'Mapbox-Comic',
+        },
+      },
+      {
+        label: '建筑',
+        value: 'Building',
+        prejection: 'EPSG:3857',
+        exteral: {
+          attribution: 'Mapbox-建筑',
+        },
+      },
+    ],
+  },
 ];
 export default mapList;
 export function defaultMap() {

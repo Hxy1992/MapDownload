@@ -8,7 +8,7 @@
         <span class="title">下载参数配置</span>
         <span
           class="close"
-          @click="calcel"
+          @click="cancel"
         >X</span>
       </div>
       <div class="content">
@@ -161,7 +161,7 @@ export default defineComponent({
   align-items: center;
   .dialog{
     width: 450px;
-    height: 300px;
+    padding: 8px;
     background-color: white;
     box-shadow: 0px 2px 4px 0px rgb(54 58 80 / 30%);
     border-radius: 3px;
