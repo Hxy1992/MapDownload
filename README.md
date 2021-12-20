@@ -39,6 +39,27 @@ viewer.imageryLayers.addImageryProvider(new BaiduImageryProvider({
 
 ```
 
+### openlayers
+
+```javascript
+// 非百度地图
+const baseMap = new ol.layer.Tile({
+  source: new ol.source.XYZ({
+    url: 'http://localhost:7099/{z}/{x}/{y}.png',
+    projection: 'EPSG:3857',
+  }),
+});
+const map = new ol.Map({
+  layers: [baseMap],
+  target: 'map',
+  view: new ol.View({
+    center: ol.proj.transform([105.08052356963802, 36.04231948670001], 'EPSG:4326', 'EPSG:3857'),
+    zoom: 5,
+  }),
+});
+
+```
+
 ### maptalks
 
 ```javascript
