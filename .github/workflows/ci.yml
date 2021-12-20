@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [16.13.x]
+        node-version: [16.13.1]
     # job的步骤
     steps:
     # 步骤名称
@@ -43,4 +43,5 @@ jobs:
     - name: Release exe
       uses: ncipollo/release-action@v1.5.0
       with:
+        # ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
         artifacts: "mapdownload.zip"
