@@ -90,4 +90,5 @@ var map = new maptalks.Map('map', {
 
 # TODO
 + 加入天地图和mapbox，自行输入地图key
++ 绘制范围鼠标样式等
 + 优化交互和样式
