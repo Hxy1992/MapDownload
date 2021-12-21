@@ -34,7 +34,6 @@
     <layer-control
       :visible="layersVisible"
       @choose="chooseLayers"
-      @show-mapkey="showSet(true), layersVisible = false"
     />
     <save-diablog
       :visible="saveVisible"
@@ -126,6 +125,7 @@ export default defineComponent({
     },
     chooseLayers(data) {
       this.layersVisible = false;
+      this._currentLayer = data;
       map.switchBaseLayer(data);
     },
     drawRect() {
@@ -161,6 +161,9 @@ export default defineComponent({
     },
     showSet(val) {
       this.setVisible = val;
+      if (!val && this._currentLayer && (this._currentLayer.parent === 'Tdt' || this._currentLayer.parent === 'Mapbox')) {
+        map.switchBaseLayer(this._currentLayer);
+      }
     },
   },
 });

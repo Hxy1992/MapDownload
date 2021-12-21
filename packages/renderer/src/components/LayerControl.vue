@@ -55,8 +55,9 @@ export default defineComponent({
       const {mapboxKey, tdtKey} = getKeys();
       if ((item.value === 'Mapbox' && !mapboxKey) || (item.value === 'Tdt' && !tdtKey)) {
         // eslint-disable-next-line
-        this.$emit('showMapkey');
-        return;
+        // this.$emit('showMapkey');
+        alert(`请设置${item.label}地图Key`);
+        // return;
       }
       // eslint-disable-next-line
       this.$emit('choose', { parent: item.value, layer: child });

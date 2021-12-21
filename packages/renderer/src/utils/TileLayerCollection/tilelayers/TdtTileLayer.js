@@ -4,7 +4,7 @@ import params from './../param';
 class TDTTileLayer extends BaseTileLayer {
     constructor(id, options = {}) {
         const style = options.style || 'Normal';
-        options.urlTemplate = params.TDT[style].url;
+        options.urlTemplate = params().TDT[style].url;
         super(id, options);
     }
 }

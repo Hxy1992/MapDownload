@@ -79,8 +79,8 @@ export default defineComponent({
     },
     ok() {
       setKeys({
-        tdtKey: this.tdtKey,
-        mapboxKey: this.mapboxKey,
+        tdtKey: this.tdtKey || '',
+        mapboxKey: this.mapboxKey || '',
       });
       this.hide();
     },

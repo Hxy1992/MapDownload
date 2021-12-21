@@ -4,7 +4,7 @@ import params from './../param';
 class AmapTileLayer extends BaseTileLayer {
     constructor(id, options = {}) {
         const style = options.style || 'Normal';
-        options.urlTemplate = params.Amap[style].url;
+        options.urlTemplate = params().Amap[style].url;
         super(id, options);
     }
 }

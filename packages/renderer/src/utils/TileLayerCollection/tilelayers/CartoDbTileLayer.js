@@ -4,7 +4,7 @@ import params from './../param';
 class CartoDbTileLayer extends BaseTileLayer {
     constructor(id, options = {}) {
         const style = options.style || 'light';
-        options.urlTemplate = params.CartoDb[style].url;
+        options.urlTemplate = params().CartoDb[style].url;
         super(id, options);
     }
 }
