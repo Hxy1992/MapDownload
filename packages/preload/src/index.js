@@ -2,6 +2,10 @@ import {contextBridge} from 'electron';
 const { ipcRenderer } = require('electron');
 
 const apiKey = 'electron';
+let imageDownloadhandle;
+ipcRenderer.on('imageDownloadDone', (event, state) => {
+  imageDownloadhandle && imageDownloadhandle(state);
+});
 /**
  * @see https://github.com/electron/electron/issues/21437#issuecomment-573522360
  */
@@ -9,9 +13,7 @@ const api = {
   versions: process.versions,
   ipcRenderer: { ...ipcRenderer },
   imageDownloadDone: (callback) => {
-    ipcRenderer.on('imageDownloadDone', (event, state) => {
-      callback(state);
-    });
+    imageDownloadhandle = callback;
   },
 };
 

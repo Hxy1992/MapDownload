@@ -42,6 +42,8 @@
     "fs-extra": "^10.0.0",
     "maptalks": "^1.0.0-beta.7",
     "marked": "^4.0.8",
+    "sharp": "^0.29.3",
+    "superagent": "^6.1.0",
     "vue": "3.2.22",
     "vue-router": "4.0.12"
   }
