@@ -32,7 +32,7 @@ export function ipcHandle(win) {
     item.setSavePath(savePath);
     // 下载任务完成
     item.once('done', (e, state) => {
-      win.webContents.postMessage('imageDownloadDone', {
+      win.webContents.send('imageDownloadDone', {
         state,
       });
     });
