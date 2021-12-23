@@ -93,7 +93,7 @@ export default defineComponent({
   },
   data() {
     return {
-      savePath: 'D:\\地图数据\\测试',
+      savePath: '',
       maxZoom: '8',
       minZoom: '5',
     };

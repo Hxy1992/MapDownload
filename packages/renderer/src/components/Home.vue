@@ -76,6 +76,7 @@
       关闭
     </button>
   </div>
+  <tips />
 </template>
 
 <script>
@@ -87,6 +88,7 @@ import FileSave from '../utils/file-save.js';
 import { setProgressDom, showProgress } from '../utils/progress';
 import HelpDiablog from './Help.vue';
 import MapKey from './MapKey.vue';
+import Tips from './Tips.vue';
 // eslint-disable-next-line
 let map
 export default defineComponent({
@@ -96,6 +98,7 @@ export default defineComponent({
     SaveDiablog,
     HelpDiablog,
     MapKey,
+    Tips,
   },
   setup() {
 

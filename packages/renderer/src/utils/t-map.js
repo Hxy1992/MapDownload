@@ -69,12 +69,14 @@ class TMap{
       const drawTool = this._drawTool;
       drawTool.enable();
     }
+    this.map.setCursor('crosshair');
   }
   // 结束绘制
   endDraw() {
     if (this._drawLayer) {
       this._drawLayer.clear();
       this._drawTool.disable();
+      this.map.resetCursor();
     }
   }
   // 获取下载范围
