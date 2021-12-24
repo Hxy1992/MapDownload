@@ -91,3 +91,4 @@ var map = new maptalks.Map('map', {
 # TODO
 + 多个图层叠加下载问题
 + 行政区划范围下载和瓦片裁切
++ 自定义图层加载、下载，支持上传geojson作为下载范围
