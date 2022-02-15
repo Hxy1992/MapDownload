@@ -3,7 +3,10 @@
 # map-download
 
 > 基于electron和maptalks实现高德地图、百度地图（包括百度自定义地图）、腾讯地图、OpenStreetMap、CartoDb、ArcGIS在线地图、天地图、MapBox的下载
-https://img2020.cnblogs.com/blog/1068060/202112/1068060-20211223154612736-655170595.png
+
+![image](https://user-images.githubusercontent.com/14800641/154039927-e8994f36-523b-40cb-b184-46a7d8e1a9f2.png)
+
+
 ## Build Setup
 
 ``` bash
