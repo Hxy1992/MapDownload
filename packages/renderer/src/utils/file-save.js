@@ -1,5 +1,5 @@
 // 地图
-import TileTMS from './tile-tms';
+import {TileTMS, TileTMSList, TileTMSListMerge} from './tile-tms';
 import TileBaidu from './tile-baidu';
 import { getState } from './progress';
 class FileSave{
@@ -14,20 +14,38 @@ class FileSave{
       this.downloadTms(data);
     }
   }
+  // 保存单张图片
   saveImage(param) {
     // const param = {
-    //   url: 'https://map.geoq.cn/ArcGIS/rest/services/ChinaOnlineCommunity/MapServer/tile/9/207/421',
+    //   url: 'https://map.geoq.cn/MapServer/tile/9/207/421',
     //   savePath: '',
     // };
-    // param.savePath = this.rootPath + '\\421.png';
     window.electron.ipcRenderer.send('save-image', param);
+
+  }
+  // 保存图片并合并
+  saveImagesAndMerge(param) {
+    // const param = {
+    //   urls: ['https://map.geoq.cn/MapServer/tile/9/207/421','https://map.geoq.cn/MapServer/tile/9/207/421'],
+    //   savePath: '',
+    // };
+    window.electron.ipcRenderer.send('save-image-merge', param);
 
   }
   ensureDirSync(path) {
     window.electron.ipcRenderer.send('ensure-dir', path);
   }
   downloadTms(data) {
-    new TileTMS(data, this.saveImage, this.ensureDirSync);
+    if (Array.isArray(data.mapConfig.titleLayer) && data.mapConfig.titleLayer.length > 1) {
+      if (data.mergeLayers) {
+        new TileTMSListMerge(data, this.saveImage, this.ensureDirSync);
+      } else {
+        new TileTMSList(data, this.saveImage, this.ensureDirSync);
+      }
+    } else {
+      new TileTMS(data, this.saveImage, this.ensureDirSync);
+    }
+
   }
   downloadBaidu(data) {
     new TileBaidu(data, this.saveImage, this.ensureDirSync);

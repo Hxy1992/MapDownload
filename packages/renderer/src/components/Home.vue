@@ -38,6 +38,7 @@
     <save-diablog
       :visible="saveVisible"
       :download-extent="downloadExtent"
+      :base-layer="saveLayers"
       @ok="save"
       @cancel="cancelSave"
     />
@@ -111,6 +112,7 @@ export default defineComponent({
       downloadExtent: {},
       helpVisible: false,
       setVisible: false,
+      saveLayers: null,
     };
   },
   mounted() {
@@ -145,6 +147,8 @@ export default defineComponent({
         alert('获取下载范围错误，请重新绘制下载范围');
         return;
       }
+      const {titleLayer} = map.getBaseMapConfig();
+      this.saveLayers = titleLayer;
       this.saveVisible = true;
     },
     save(val) {

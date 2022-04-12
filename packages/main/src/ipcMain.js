@@ -37,8 +37,39 @@ export function ipcHandle(win) {
   // });
 
 
-  // superagent & sharp 下载并处理图片
+  // superagent & sharp 下载图片
   ipcMain.on('save-image', (event, args) => {
+    const sharpStream = sharp({
+      failOnError: false,
+    });
+    const promises = [];
+    promises.push(
+      sharpStream
+        .toFile(args.savePath),
+    );
+    // got.stream(args.url).pipe(sharpStream);
+    request.get(args.url).pipe(sharpStream);
+    Promise.all(promises)
+      .then(() => {
+        win.webContents.send('imageDownloadDone', {
+          state: 'completed',
+        });
+      })
+      .catch(() => {
+        // console.error('Error processing files, let\'s clean it up', err);
+        try {
+          fs.unlinkSync(args.savePath);
+        } catch (e) {
+          console.error(e);
+        }
+        win.webContents.send('imageDownloadDone', {
+          state: 'error',
+        });
+      });
+  });
+
+  // superagent & sharp 下载、合并图片
+  ipcMain.on('save-image-merge', (event, args) => {
     const sharpStream = sharp({
       failOnError: false,
     });

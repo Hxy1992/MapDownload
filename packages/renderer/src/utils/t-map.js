@@ -88,11 +88,11 @@ class TMap{
   getBaseMapConfig() {
     const baseMap = this.map.getBaseLayer();
     if (baseMap instanceof maptalks.GroupTileLayer) {
-      const layer = baseMap.layers[0];
+      const layers = baseMap.layers;
       return {
-        config: layer.config(),
+        config: layers.map(temp => {return temp.config();}),
         projection: baseMap.getProjection(),
-        titleLayer: layer,
+        titleLayer: layers,
       };
     } else {
       return {

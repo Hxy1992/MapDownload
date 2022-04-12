@@ -44,6 +44,19 @@
             type="text"
           >
         </div>
+        <div
+          v-if="showMerge"
+          class="item"
+        >
+          <span class="label">合并Label注释：</span>
+          <div class="value">
+            <input
+              v-model="mergeLayers"
+              disabled
+              type="checkbox"
+            >是否合并
+          </div>
+        </div>
         <div class="item">
           <span class="label">下载路径：</span>
           <div class="value">
@@ -87,6 +100,10 @@ export default defineComponent({
       required: true,
       type: Object,
     },
+    baseLayer: {
+      required: true,
+      type: [Object, Array],
+    },
   },
   setup() {
 
@@ -96,7 +113,13 @@ export default defineComponent({
       savePath: '',
       maxZoom: '8',
       minZoom: '5',
+      mergeLayers: false,
     };
+  },
+  computed: {
+    showMerge() {
+      return Array.isArray(this.baseLayer) && this.baseLayer.length > 1;
+    },
   },
   mounted() {
   },
@@ -138,6 +161,7 @@ export default defineComponent({
         savePath: this.savePath,
         minZoom: minZoom,
         maxZoom: maxZoom,
+        mergeLayers: this.mergeLayers,
         extent: this.downloadExtent,
       };
       // eslint-disable-next-line
