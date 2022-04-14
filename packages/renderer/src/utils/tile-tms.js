@@ -210,16 +210,12 @@ export class TileTMSList {
     this.titleLayer = data.mapConfig.titleLayer;
     setState(true);
 
-    let list = [];
-    data.mapConfig.titleLayer.forEach(layer => {
-      list = [...list, ...this.calcTiles(layer.config().style, layer)];
-    });
-    this.list = list;
+    this.list = this.calcTiles(data.mapConfig.titleLayer);
     this.download();
   }
-  calcTiles(subpath, layer) {
+  calcTiles(layers) {
     // 当前绝对路径
-    const downloadPath = this.rootPath + '\\' + subpath + '\\';
+    const downloadPath = this.rootPath + '\\';
 
     // 下载范围
     const zmin = this.minZoom;
@@ -246,9 +242,9 @@ export class TileTMSList {
         const temppath = downloadPath + z + '\\' + x;
         this.apiEnsureDirSync(temppath);
         for (let y = minLat; y < maxLat; y++) {
-          const str3 = layer.getTileUrl(x, y, z);
+          const str3 = layers.map(ll => {return {url: ll.getTileUrl(x, y, z), isLabel: ll.config().style.includes('_Label')};});
           const path2 = temppath + '\\' + y + pictureType;
-          list.push({zoom: z, url:str3, savePath:path2});
+          list.push({zoom: z, layers:str3, savePath:path2});
         }
       }
     }

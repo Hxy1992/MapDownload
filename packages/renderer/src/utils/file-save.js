@@ -26,7 +26,7 @@ class FileSave{
   // 保存图片并合并
   saveImagesAndMerge(param) {
     // const param = {
-    //   urls: ['https://map.geoq.cn/MapServer/tile/9/207/421','https://map.geoq.cn/MapServer/tile/9/207/421'],
+    //   layers: [{url:'https://map.geoq.cn/MapServer/tile/9/207/421',isLabel: true}],
     //   savePath: '',
     // };
     window.electron.ipcRenderer.send('save-image-merge', param);
@@ -38,7 +38,7 @@ class FileSave{
   downloadTms(data) {
     if (Array.isArray(data.mapConfig.titleLayer) && data.mapConfig.titleLayer.length > 1) {
       if (data.mergeLayers) {
-        new TileTMSListMerge(data, this.saveImage, this.ensureDirSync);
+        new TileTMSListMerge(data, this.saveImagesAndMerge, this.ensureDirSync);
       } else {
         new TileTMSList(data, this.saveImage, this.ensureDirSync);
       }

@@ -48,11 +48,10 @@
           v-if="showMerge"
           class="item"
         >
-          <span class="label">合并Label注释：</span>
+          <span class="label">标注下载：</span>
           <div class="value">
             <input
               v-model="mergeLayers"
-              disabled
               type="checkbox"
             >是否合并
           </div>

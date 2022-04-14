@@ -45,6 +45,7 @@ export function ipcHandle(win) {
     const promises = [];
     promises.push(
       sharpStream
+        // .ensureAlpha()
         .toFile(args.savePath),
     );
     // got.stream(args.url).pipe(sharpStream);
@@ -70,33 +71,47 @@ export function ipcHandle(win) {
 
   // superagent & sharp 下载、合并图片
   ipcMain.on('save-image-merge', (event, args) => {
-    const sharpStream = sharp({
-      failOnError: false,
-    });
-    const promises = [];
-    promises.push(
-      sharpStream
-        .toFile(args.savePath),
-    );
-    // got.stream(args.url).pipe(sharpStream);
-    request.get(args.url).pipe(sharpStream);
-    Promise.all(promises)
-      .then(() => {
-        win.webContents.send('imageDownloadDone', {
-          state: 'completed',
+    try {
+      let imgBack;
+      const imgBuffer = [];
+      args.layers.forEach(async (item, index) => {
+        const sharpStream = sharp({
+          failOnError: false,
         });
-      })
-      .catch(() => {
-        // console.error('Error processing files, let\'s clean it up', err);
-        try {
-          fs.unlinkSync(args.savePath);
-        } catch (e) {
-          console.error(e);
+        request.get(item.url).pipe(sharpStream);
+        const bff = await sharpStream.toBuffer();
+        if (item.isLabel) {
+          imgBack = bff;
+        } else {
+          imgBuffer.push(bff);
         }
-        win.webContents.send('imageDownloadDone', {
-          state: 'error',
-        });
+        // 结束保存
+        if (index === args.layers.length - 1) {
+          sharp(imgBack)
+          .composite(imgBuffer.map(input => {
+            return { input, gravity: 'centre', blend: 'saturate' };
+          }))
+          .toFile(args.savePath)
+          .then(() => {
+            win.webContents.send('imageDownloadDone', {
+              state: 'completed',
+            });
+          })
+          .catch(() => {
+            try {
+              fs.unlinkSync(args.savePath);
+            } catch (e) {
+              console.error(e);
+            }
+          });
+        }
       });
+    } catch {
+      win.webContents.send('imageDownloadDone', {
+        state: 'error',
+      });
+    }
+
   });
 
 }

@@ -4,6 +4,8 @@
 
 > 基于electron和maptalks实现高德地图、百度地图（包括百度自定义地图）、腾讯地图、OpenStreetMap、CartoDb、ArcGIS在线地图、天地图、MapBox的下载
 
+> 支持卫星遥感影像和标注合并
+
 > 软件下载地址：https://github.com/Hxy1992/MapDownload/releases
 
 ![image](https://user-images.githubusercontent.com/14800641/154039927-e8994f36-523b-40cb-b184-46a7d8e1a9f2.png)
@@ -94,6 +96,5 @@ var map = new maptalks.Map('map', {
 ```
 
 # TODO
-+ 多个图层叠加下载问题
 + 行政区划范围下载和瓦片裁切
 + 自定义图层加载、下载，支持上传geojson作为下载范围
