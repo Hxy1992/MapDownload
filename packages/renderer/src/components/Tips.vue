@@ -12,7 +12,7 @@
         1.选择需要下载的图层（天地图和Mapbox需输入Key，可在设置中自行配置）
       </div>
       <div class="item">
-        2.绘制需要下载的地图范围
+        2.绘制需要下载的地图范围 or 选择下载区域
       </div>
       <div class="item">
         3.点击下载按钮，配置相关信息，点击确定
@@ -30,7 +30,7 @@
 <script >
 import {defineComponent} from 'vue';
 export default defineComponent({
-  name: 'App',
+  name: 'TipsInfo',
   setup() {
   },
   data() {

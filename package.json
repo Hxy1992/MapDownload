@@ -26,6 +26,7 @@
     "*.{js,ts,vue}": "eslint --cache --fix"
   },
   "devDependencies": {
+    "@vicons/ionicons5": "^0.12.0",
     "@vitejs/plugin-vue": "1.10.0",
     "cross-env": "7.0.3",
     "electron": "16.0.1",
@@ -33,8 +34,10 @@
     "electron-devtools-installer": "3.2.0",
     "eslint": "8.3.0",
     "eslint-plugin-vue": "8.1.1",
+    "naive-ui": "^2.28.0",
     "playwright": "1.16.3",
     "sass": "^1.45.0",
+    "vfonts": "^0.0.3",
     "vite": "2.6.14"
   },
   "dependencies": {

@@ -6,10 +6,13 @@
     <div class="dialog">
       <div class="header">
         <span class="title">帮助</span>
-        <span
+        <n-icon
           class="close"
+          size="20"
           @click="ok"
-        >X</span>
+        >
+          <Close />
+        </n-icon>
       </div>
       <div class="content">
         <div>
@@ -23,13 +26,13 @@
           class="code"
         />
       </div>
-      <div class="footer">
+      <!-- <div class="footer">
         <button
           @click="ok"
         >
           确定
         </button>
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
@@ -37,8 +40,13 @@
 <script>
 import {defineComponent} from 'vue';
 import { marked } from 'marked';
+import { Close } from '@vicons/ionicons5';
+
 export default defineComponent({
   name: 'HelpDialog',
+  components: {
+    Close,
+  },
   props: {
     visible: {
       required: true,
@@ -170,9 +178,6 @@ var map = new maptalks.Map('map', {
       }
       .close{
         cursor: pointer;
-        &:hover{
-          color: aqua;
-        }
       }
     }
     .content{

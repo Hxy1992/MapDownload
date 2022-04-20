@@ -1,4 +1,5 @@
 // 地图列表
+import {uuid} from './random';
 const BaiduConstomSubdomains = [0, 1, 2]; // 百度自定义瓦片子域名
 const mapList = [
   {
@@ -404,7 +405,24 @@ const mapList = [
     ],
   },
 ];
-export default mapList;
+
 export function defaultMap() {
   return { parent: mapList[0].value, layer: mapList[0].children[0] };
+}
+
+export function getMapList() {
+  const list = [...mapList];
+  const setUid = function (item) {
+    item.uuid = uuid();
+    if (Array.isArray(item.children)) {
+      item.children.forEach(child => {
+        child.pid = item.uuid;
+        setUid(child);
+      });
+    }
+  };
+  list.forEach(item => {
+    setUid(item);
+  });
+  return list;
 }

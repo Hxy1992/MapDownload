@@ -24,8 +24,19 @@ class TMap{
       scaleControl : true, // 比例尺控件
       fog: false,
     });
+    this._vectorLayer = new maptalks.VectorLayer('vector').addTo(map);
     this.map = map;
     this.switchBaseLayer(defaultMap());
+  }
+  getMap() {
+    return this.map;
+  }
+  // 显示瓦片网格
+  showTileGrid(val) {
+    const baseLayer = this.map.getBaseLayer();
+    baseLayer.config({debug: val});
+    baseLayer.hide();
+    baseLayer.show();
   }
   switchBaseLayer(param) {
     const methodName = 'get' + param.parent + 'TileLayer';
@@ -46,15 +57,16 @@ class TMap{
   // 绘制矩形、编辑矩形位置
   startDraw() {
     const map = this.map;
-    const isFirst = typeof this._drawLayer === 'undefined';
+    const isFirst = typeof this._drawTool === 'undefined';
     if (isFirst) {
-      const layer = new maptalks.VectorLayer('vector').addTo(map);
-      this._drawLayer = layer;
+      const layer = this._vectorLayer;
       const drawTool = new maptalks.DrawTool({
         mode: 'Rectangle',
         symbol : {
-        'lineColor' : '#1296db',
-        'lineWidth' : 3,
+          lineColor: '#34495e',
+          lineWidth: 2,
+          polygonFill: 'rgb(135,196,240)',
+          polygonOpacity: 0.6,
         },
       }).addTo(map).enable();
       this._drawTool = drawTool;
@@ -71,18 +83,21 @@ class TMap{
     }
     this.map.setCursor('crosshair');
   }
+  getDrawLayer() {
+    return this._vectorLayer;
+  }
   // 结束绘制
   endDraw() {
-    if (this._drawLayer) {
-      this._drawLayer.clear();
-      this._drawTool.disable();
+    if (this._vectorLayer) {
+      this._vectorLayer.clear();
+      this._drawTool?.disable();
       this.map.resetCursor();
     }
   }
   // 获取下载范围
   getDownloadExtent() {
-    if (!this._drawLayer || this._drawLayer.getCount() !== 1) return null;
-    return this._drawLayer.getGeometries()[0].getExtent();
+    if (!this._vectorLayer) return null;
+    return this._vectorLayer.getExtent();
   }
   // 获取瓦片图层参数
   getBaseMapConfig() {
@@ -101,6 +116,22 @@ class TMap{
         titleLayer: baseMap,
       };
     }
+  }
+  // 添加geojson至地图
+  addGeometry(geojson) {
+    const geometry = maptalks.GeoJSON.toGeometry(geojson, geo => {
+      geo.setSymbol({
+        lineColor: '#34495e',
+        lineWidth: 2,
+        polygonFill: 'rgb(135,196,240)',
+        polygonOpacity: 0.6,
+      });
+    });
+    this._vectorLayer.addGeometry(geometry);
+  }
+  // 自动适应地图范围
+  fitExtent() {
+    this.map.fitExtent(this._vectorLayer.getExtent(), 0);
   }
 }
 

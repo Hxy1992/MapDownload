@@ -1,47 +1,45 @@
 <template>
-  <div
-    v-if="visible"
-    class="box-modal"
+  <n-modal
+    :show="showModal"
+    :show-icon="false"
+    :on-mask-click="cancel"
+    :on-esc="cancel"
+    :on-close="cancel"
+    preset="dialog"
   >
-    <div class="dialog">
-      <div class="header">
-        <span class="title">地图Key配置</span>
-        <span
-          class="close"
-          @click="hide"
-        >X</span>
-      </div>
-      <div class="content">
-        <div class="item">
-          <span class="label">天地图：</span>
-          <input
-            v-model="tdtKey"
-            class="value"
-            type="text"
-          >
-        </div>
-        <div class="item">
-          <span class="label">MapBox：</span>
-          <input
-            v-model="mapboxKey"
-            class="value"
-            type="text"
-          >
-        </div>
-      </div>
-      <div class="footer">
-        <button @click="hide">
-          取消
-        </button>
-        <button
-          class="ok"
-          @click="ok"
+    <template #header>
+      地图Key配置
+    </template>
+    <div class="dialog-content">
+      <div class="item">
+        <span class="label">天地图：</span>
+        <input
+          v-model="tdtKey"
+          class="value"
+          type="text"
         >
-          确定
-        </button>
+      </div>
+      <div class="item">
+        <span class="label">MapBox：</span>
+        <input
+          v-model="mapboxKey"
+          class="value"
+          type="text"
+        >
       </div>
     </div>
-  </div>
+    <template #action>
+      <n-button @click="cancel">
+        取消
+      </n-button>
+      <n-button
+        type="info"
+        @click="ok"
+      >
+        确定
+      </n-button>
+    </template>
+  </n-modal>
 </template>
 
 <script>
@@ -60,9 +58,18 @@ export default defineComponent({
   },
   data() {
     return {
+      showModal: false,
       tdtKey: '',
       mapboxKey: '',
     };
+  },
+  watch: {
+    visible() {
+      this.showModal = this.visible;
+    },
+  },
+  created() {
+    this.showModal = this.visible;
   },
   mounted() {
     this.getKeys();
@@ -73,7 +80,7 @@ export default defineComponent({
       this.tdtKey = data?.tdtKey;
       this.mapboxKey = data?.mapboxKey;
     },
-    hide() {
+    cancel() {
       // eslint-disable-next-line
       this.$emit('hide');
     },
@@ -82,76 +89,27 @@ export default defineComponent({
         tdtKey: this.tdtKey || '',
         mapboxKey: this.mapboxKey || '',
       });
-      this.hide();
+      this.cancel();
     },
   },
 });
 </script>
 
 <style lang="scss" scoped>
-.box-modal{
-  position: fixed;
-  left: 0px;
-  top: 0;
+.dialog-content{
   width: 100%;
-  height: 100%;
-  z-index: 100;
-  background-color: rgba(0, 0, 0, 0.3);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  .dialog{
-    padding: 8px;
-    width: 450px;
-    background-color: white;
-    box-shadow: 0px 2px 4px 0px rgb(54 58 80 / 30%);
-    border-radius: 3px;
-    .header{
-      width: 100%;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 5px 8px;
-      .title{
-        color: #303133;
-        font-weight: bold;
-      }
-      .close{
-        cursor: pointer;
-        &:hover{
-          color: aqua;
-        }
-      }
-    }
-    .content{
-      width: 100%;
-      padding: 8px 16px;
-      .item{
-        margin: 3px 0;
-      }
-      .label{
-        display: inline-block;
-        width: 80px;
-        text-align: right;
-      }
-      .value{
-        display: inline-block;
-        width: 260px;
-      }
-    }
-    .footer{
-      width: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 5px 8px;
-      .ok{
-        margin-left: 8px;
-      }
-      button{
-        cursor: pointer;
-      }
-    }
+  padding: 8px 16px;
+  .item{
+    margin: 3px 0;
+  }
+  .label{
+    display: inline-block;
+    width: 80px;
+    text-align: right;
+  }
+  .value{
+    display: inline-block;
+    width: 260px;
   }
 }
 

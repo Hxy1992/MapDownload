@@ -1,89 +1,101 @@
 <template>
-  <div
-    v-if="visible"
-    class="box-modal"
+  <n-modal
+    :show="showModal"
+    :show-icon="false"
+    :on-mask-click="cancel"
+    :on-esc="cancel"
+    :on-close="cancel"
+    preset="dialog"
   >
-    <div class="dialog">
-      <div class="header">
-        <span class="title">下载参数配置</span>
-        <span
-          class="close"
-          @click="cancel"
-        >X</span>
-      </div>
-      <div class="content">
-        <div class="item">
-          <span class="label">下载范围：</span>
-          <span class="value">xmin：{{ downloadExtent.xmin }}</span>
-        </div>
-        <div class="item">
-          <span class="label" />
-          <span class="value">xmax：{{ downloadExtent.xmax }}</span>
-        </div>
-        <div class="item">
-          <span class="label" />
-          <span class="value">ymin：{{ downloadExtent.ymin }}</span>
-        </div>
-        <div class="item">
-          <span class="label" />
-          <span class="value">ymax：{{ downloadExtent.ymax }}</span>
-        </div>
-        <div class="item">
-          <span class="label">最大层级：</span>
-          <input
-            v-model="maxZoom"
-            class="value"
-            type="text"
-          >
-        </div>
-        <div class="item">
-          <span class="label">最小层级：</span>
-          <input
-            v-model="minZoom"
-            class="value"
-            type="text"
-          >
-        </div>
-        <div
-          v-if="showMerge"
-          class="item"
+    <template #header>
+      下载参数配置
+    </template>
+    <div class="dialog-content">
+      <n-descriptions
+        label-placement="left"
+        title="下载范围"
+        size="small"
+        column="1"
+        class="descriptions"
+      >
+        <n-descriptions-item label="xmin">
+          {{ downloadExtent.xmin }}
+        </n-descriptions-item>
+        <n-descriptions-item label="xmax">
+          {{ downloadExtent.xmax }}
+        </n-descriptions-item>
+        <n-descriptions-item label="ymin">
+          {{ downloadExtent.ymin }}
+        </n-descriptions-item>
+        <n-descriptions-item label="ymax">
+          {{ downloadExtent.ymax }}
+        </n-descriptions-item>
+      </n-descriptions>
+      <div class="item">
+        <span class="label">最大层级：</span>
+        <input
+          v-model="maxZoom"
+          class="value"
+          type="text"
         >
-          <span class="label">标注下载：</span>
-          <div class="value">
-            <input
-              v-model="mergeLayers"
-              type="checkbox"
-            >是否合并
-          </div>
-        </div>
-        <div class="item">
-          <span class="label">下载路径：</span>
-          <div class="value">
-            <input
-              v-model="savePath"
-              type="text"
-              disabled
-              style="width:215px;"
-            >
-            <button @click="setFolder">
-              选择
-            </button>
-          </div>
+      </div>
+      <div class="item">
+        <span class="label">最小层级：</span>
+        <input
+          v-model="minZoom"
+          class="value"
+          type="text"
+        >
+      </div>
+      <div
+        v-if="showMerge"
+        class="item"
+      >
+        <span class="label">标注下载：</span>
+        <div class="value">
+          <input
+            v-model="mergeLayers"
+            type="checkbox"
+          >是否合并
         </div>
       </div>
-      <div class="footer">
-        <button @click="cancel">
-          取消
-        </button>
-        <button
-          class="ok"
-          @click="ok"
-        >
-          确定
-        </button>
+      <div class="item">
+        <span class="label">边界裁切：</span>
+        <div class="value">
+          <input
+            v-model="clipImage"
+            type="checkbox"
+            disabled
+          >
+        </div>
+      </div>
+      <div class="item">
+        <span class="label">下载路径：</span>
+        <div class="value">
+          <input
+            v-model="savePath"
+            type="text"
+            disabled
+            style="width:215px;"
+          >
+          <button @click="setFolder">
+            选择
+          </button>
+        </div>
       </div>
     </div>
-  </div>
+    <template #action>
+      <n-button @click="cancel">
+        取消
+      </n-button>
+      <n-button
+        type="info"
+        @click="ok"
+      >
+        确定
+      </n-button>
+    </template>
+  </n-modal>
 </template>
 
 <script>
@@ -109,16 +121,26 @@ export default defineComponent({
   },
   data() {
     return {
+      showModal: false,
       savePath: '',
       maxZoom: '8',
       minZoom: '5',
       mergeLayers: false,
+      clipImage: false,
     };
   },
   computed: {
     showMerge() {
       return Array.isArray(this.baseLayer) && this.baseLayer.length > 1;
     },
+  },
+  watch: {
+    visible() {
+      this.showModal = this.visible;
+    },
+  },
+  created() {
+    this.showModal = this.visible;
   },
   mounted() {
   },
@@ -140,21 +162,21 @@ export default defineComponent({
     },
     ok() {
       if (!this.savePath) {
-        return alert('请选择保存目录');
+        return window.$message.warning('请选择保存目录');
       }
       if (!this.maxZoom) {
-        return alert('请输入最大层级');
+        return window.$message.warning('请输入最大层级');
       }
       if (!this.minZoom) {
-        return alert('请输入最小层级');
+        return window.$message.warning('请输入最小层级');
       }
       const minZoom = parseInt(Number(this.minZoom));
       const maxZoom = parseInt(Number(this.maxZoom));
       if (isNaN(minZoom) || isNaN(maxZoom)) {
-        return alert('层级格式错误，请输入非负整数');
+        return window.$message.warning('层级格式错误，请输入非负整数');
       }
       if (minZoom >= maxZoom || minZoom < 0 || maxZoom > 18) {
-        return alert('层级格式错误');
+        return window.$message.warning('层级格式错误');
       }
       const param = {
         savePath: this.savePath,
@@ -171,70 +193,31 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-.box-modal{
-  position: fixed;
-  left: 0px;
-  top: 0;
+.dialog-content{
   width: 100%;
-  height: 100%;
-  z-index: 100;
-  background-color: rgba(0, 0, 0, 0.3);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  .dialog{
-    width: 450px;
-    padding: 8px;
-    background-color: white;
-    box-shadow: 0px 2px 4px 0px rgb(54 58 80 / 30%);
-    border-radius: 3px;
-    .header{
-      width: 100%;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 5px 8px;
-      .title{
-        color: #303133;
-        font-weight: bold;
-      }
-      .close{
-        cursor: pointer;
-        &:hover{
-          color: aqua;
-        }
-      }
-    }
-    .content{
-      width: 100%;
-      padding: 8px 16px;
-      .item{
-        margin: 3px 0;
-      }
-      .label{
-        display: inline-block;
-        width: 80px;
-        text-align: right;
-      }
-      .value{
-        display: inline-block;
-        width: 260px;
-      }
-    }
-    .footer{
-      width: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 5px 8px;
-      .ok{
-        margin-left: 8px;
-      }
-      button{
-        cursor: pointer;
-      }
-    }
+  padding: 8px 16px;
+  .item{
+    margin: 3px 0;
+  }
+  .label{
+    display: inline-block;
+    width: 80px;
+    text-align: right;
+  }
+  .value{
+    display: inline-block;
+    width: 260px;
   }
 }
-
+.descriptions{
+  ::v-deep .n-descriptions-header{
+    font-size: 14px;
+    margin-bottom: 3px;
+  }
+  ::v-deep .n-descriptions-table-content__label{
+    display: inline-block;
+    width: 80px;
+    text-align: right;
+  }
+}
 </style>

@@ -1,40 +1,53 @@
 <template>
   <div id="map" />
   <div class="box-controls">
-    <div
-      :class="{items: true, layers: true, layersVisible: layersVisible}"
-      title="切换地图源"
-      @click="showLayers"
-    />
-    <div class="splitline" />
-    <div
-      :class="{items: true, draw: true, isdraw: isDrawing}"
-      title="绘制矩形"
-      @click="drawRect"
-    />
-    <div class="splitline" />
-    <div
-      class="items download"
-      title="下载地图"
-      @click="showSave"
-    />
-    <div class="splitline" />
-    <div
-      class="items set"
-      title="设置"
-      @click="showSet(true)"
-    />
-    <div class="splitline" />
-    <div
-      class="items help"
-      title="帮助"
-      @click="showHelp(true)"
-    />
-
     <layer-control
-      :visible="layersVisible"
       @choose="chooseLayers"
     />
+    <div class="splitline" />
+    <n-icon
+      size="20"
+      title="绘制矩形"
+      style="cursor: pointer;"
+      :color="isDrawing ? '#2080f0' : '#333333'"
+      @click="drawRect"
+    >
+      <SquareOutline />
+    </n-icon>
+    <div class="splitline" />
+    <n-icon
+      size="20"
+      title="下载地图"
+      style="cursor: pointer;"
+      @click="showSave"
+    >
+      <CloudDownloadOutline />
+    </n-icon>
+    <div class="splitline" />
+    <GridIcon @show-grid="showGrid" />
+    <div class="splitline" />
+    <n-icon
+      size="20"
+      title="设置"
+      style="cursor: pointer;"
+      @click="showSet(true)"
+    >
+      <SettingsOutline />
+    </n-icon>
+    <div class="splitline" />
+    <n-icon
+      size="20"
+      title="帮助"
+      style="cursor: pointer;"
+      @click="showHelp(true)"
+    >
+      <HelpCircleOutline />
+    </n-icon>
+    <div class="splitline" />
+    <area-choose
+      @choose="chooseArea"
+    />
+
     <save-diablog
       :visible="saveVisible"
       :download-extent="downloadExtent"
@@ -51,32 +64,7 @@
       @hide="showSet(false)"
     />
   </div>
-  <div
-    ref="container"
-    class="box-progress"
-  >
-    <progress
-      ref="progress"
-      class="progress"
-      value="0"
-      max="100"
-    />
-    <div class="item">
-      已下载:<span
-        ref="progressSuccess"
-        class="success"
-      />
-    </div>
-    <div class="item">
-      失败:<span
-        ref="progressError"
-        class="error"
-      />
-    </div>
-    <button @click="closeProgress">
-      关闭
-    </button>
-  </div>
+  <ProgressControl />
   <tips />
 </template>
 
@@ -84,12 +72,16 @@
 import {defineComponent} from 'vue';
 import TMap from '../utils/t-map.js';
 import LayerControl from './LayerControl.vue';
+import AreaChoose from './AreaChoose.vue';
 import SaveDiablog from './Save.vue';
 import FileSave from '../utils/file-save.js';
-import { setProgressDom, showProgress } from '../utils/progress';
 import HelpDiablog from './Help.vue';
 import MapKey from './MapKey.vue';
 import Tips from './Tips.vue';
+import {useMessage, useNotification} from 'naive-ui';
+import GridIcon from './GridIcon.vue';
+import ProgressControl from './ProgressControl.vue';
+import { CloudDownloadOutline, HelpCircleOutline, SettingsOutline, SquareOutline } from '@vicons/ionicons5';
 // eslint-disable-next-line
 let map
 export default defineComponent({
@@ -100,13 +92,20 @@ export default defineComponent({
     HelpDiablog,
     MapKey,
     Tips,
+    AreaChoose,
+    GridIcon,
+    ProgressControl,
+    CloudDownloadOutline,
+    HelpCircleOutline,
+    SettingsOutline,
+    SquareOutline,
   },
   setup() {
-
+    window.$message = useMessage();
+    window.$notification = useNotification();
   },
   data() {
     return {
-      layersVisible: false,
       isDrawing: false,
       saveVisible: false,
       downloadExtent: {},
@@ -115,41 +114,61 @@ export default defineComponent({
       saveLayers: null,
     };
   },
+  computed: {
+
+  },
   mounted() {
     map = new TMap('map');
-    setProgressDom({
-      success: this.$refs['progressSuccess'],
-      error: this.$refs['progressError'],
-      progress: this.$refs['progress'],
-      container: this.$refs['container'],
-    });
+    this.addMapRightClickHandle();
   },
   methods: {
-    showLayers() {
-      this.layersVisible = !this.layersVisible;
-    },
     chooseLayers(data) {
-      this.layersVisible = false;
       this._currentLayer = data;
       map.switchBaseLayer(data);
     },
     drawRect() {
       this.isDrawing = !this.isDrawing;
       if (this.isDrawing) {
+        this.hideDrawTips();
+        this._drawStartInfo = window.$notification.create({
+          content: '已开启矩形绘制，右键下载瓦片',
+          duration: 5000,
+        });
         map.startDraw();
       } else {
         map.endDraw();
       }
     },
-    showSave() {
+    hideDrawTips() {
+      if (this._drawStartInfo) {
+        this._drawStartInfo.destroy();
+        this._drawStartInfo = null;
+      }
+    },
+    // 地图右键下载瓦片
+    addMapRightClickHandle() {
+      map.getMap().addEventListener('contextmenu', () => {
+        if (!this.isDrawing) return;
+        if (!this.showSave(false)) {
+          setTimeout(() => {
+            this.isDrawing = false;
+            map.endDraw();
+            this.hideDrawTips();
+          }, 50);
+          return;
+        }
+      });
+    },
+    showSave(showMsg = true) {
       this.downloadExtent = map.getDownloadExtent();
       if (!this.downloadExtent) {
-        alert('获取下载范围错误，请重新绘制下载范围');
-        return;
+        if (showMsg) window.$message.warning('获取下载范围错误，请重新绘制下载范围');
+        return false;
       }
       const {titleLayer} = map.getBaseMapConfig();
       this.saveLayers = titleLayer;
       this.saveVisible = true;
+      return true;
     },
     save(val) {
       this.saveVisible = false;
@@ -160,9 +179,6 @@ export default defineComponent({
     cancelSave() {
       this.saveVisible = false;
     },
-    closeProgress() {
-      showProgress(false);
-    },
     showHelp(val) {
       this.helpVisible = val;
     },
@@ -171,6 +187,20 @@ export default defineComponent({
       if (!val && this._currentLayer && (this._currentLayer.parent === 'Tdt' || this._currentLayer.parent === 'Mapbox')) {
         map.switchBaseLayer(this._currentLayer);
       }
+    },
+    chooseArea(data) {
+      // 结束绘制
+      this.isDrawing = false;
+      map.endDraw();
+      this.hideDrawTips();
+      // 添加区域至地图
+      const {option, geojson} = data;
+      console.log(option);
+      map.addGeometry(geojson);
+      map.fitExtent();
+    },
+    showGrid(val) {
+      map.showTileGrid(val);
     },
   },
 });
@@ -196,35 +226,14 @@ export default defineComponent({
   // width: 200px;
   padding: 8px;
   display: flex;
-  .items{
-    width: 20px;
-    height: 20px;
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center center;
-    cursor: pointer;
-    &.layers{
-      background-image: url(/@/assets/layers.png);
-      &.layersVisible{
-        background-image: url(/@/assets/layers2.png);
-      }
-    }
-    &.draw{
-      background-image: url(/@/assets/rect.png);
-      &.isdraw{
-        background-image: url(/@/assets/rect2.png);
-      }
-    }
-    &.download{
-      background-image: url(/@/assets/download.png);
-    }
-    &.help{
-      background-image: url(/@/assets/help.png);
-    }
-    &.set{
-      background-image: url(/@/assets/set.png);
-    }
-  }
+  // .items{
+  //   width: 20px;
+  //   height: 20px;
+  //   background-size: contain;
+  //   background-repeat: no-repeat;
+  //   background-position: center center;
+  //   cursor: pointer;
+  // }
   .splitline{
     width: 1px;
     height: 20px;
@@ -232,21 +241,5 @@ export default defineComponent({
     background-color: #999999;
   }
 }
-.box-progress{
-  position: absolute;
-  right: 10px;
-  bottom: 10px;
-  background-color: white;
-  box-shadow: 0px 2px 4px 0px rgb(54 58 80 / 30%);
-  width: 200px;
-  padding: 8px;
-  z-index: 100;
-  display: none;
-  .progress{
-    width: 100%;
-  }
-  .item{
-    text-align: left;
-  }
-}
+
 </style>

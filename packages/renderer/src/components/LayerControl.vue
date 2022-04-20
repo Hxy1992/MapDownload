@@ -1,108 +1,81 @@
 <template>
-  <div
-    v-if="visible"
-    class="box-layers"
+  <n-dropdown
+    :options="layers"
+    placement="bottom-start"
+    trigger="click"
+    :key-field="'uuid'"
+    :on-clickoutside="onClickoutside"
+    @select="handleSelect"
   >
-    <div
-      v-for="item in layers"
-      :key="item.value"
-      class="group-row"
+    <n-icon
+      class="sourceLayer"
+      size="20"
+      title="切换地图源"
+      style="cursor: pointer;"
+      :color="layerColor"
+      @click="handleIconClick"
     >
-      <div class="group-name">
-        <span class="name">{{ item.label }}</span>
-        <div class="group-children">
-          <div
-            v-for="child in item.children"
-            :key="child.value"
-          >
-            <div
-              class="layer-name"
-              @click="choose(item, child)"
-            >
-              {{ child.label }}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+      <Layers />
+    </n-icon>
+  </n-dropdown>
 </template>
 
 <script>
-import {defineComponent} from 'vue';
-import LayerList from '/@/utils/layer-list.js';
+import {defineComponent, ref} from 'vue';
+import {getMapList} from '/@/utils/layer-list.js';
 import {getKeys} from '/@/utils/map-key.js';
+import { Layers } from '@vicons/ionicons5';
 export default defineComponent({
   name: 'LayerControl',
-  props: {
-    visible: {
-      required: true,
-      type: Boolean,
-    },
+  components: {
+    Layers,
   },
-  setup() {
+  props: {
+  },
+  emits: ['choose'],
+  setup(prop, {emit}) {
+    const showDropdownRef = ref(false);
+    const layerList = getMapList();
+    return {
+      layers: layerList,
+      layersVisible: showDropdownRef,
+      icon: {
+        normal: '#333333',
+        active: '#2080f0',
+      },
+      handleSelect (key, layer) {
+        const parent = layerList.find(item => { return item.uuid === layer.pid; });
 
+        const {mapboxKey, tdtKey} = getKeys();
+        if ((parent.value === 'Mapbox' && !mapboxKey) || (parent.value === 'Tdt' && !tdtKey)) {
+          window.$message.warning(`请设置${parent.label}地图Key`);
+        }
+        emit('choose', { parent: parent.value, layer: layer });
+
+        showDropdownRef.value = false;
+      },
+      handleIconClick (e) {
+        e.preventDefault();
+        showDropdownRef.value = true;
+      },
+      onClickoutside () {
+        showDropdownRef.value = false;
+      },
+    };
   },
   data() {
     return {
-      layers: LayerList,
     };
+  },
+  computed: {
+    layerColor() {
+      return this.layersVisible ? this.icon.active : this.icon.normal;
+    },
   },
   mounted() {
   },
   methods: {
-    choose(item, child) {
-      const {mapboxKey, tdtKey} = getKeys();
-      if ((item.value === 'Mapbox' && !mapboxKey) || (item.value === 'Tdt' && !tdtKey)) {
-        // eslint-disable-next-line
-        // this.$emit('showMapkey');
-        alert(`请设置${item.label}地图Key`);
-        // return;
-      }
-      // eslint-disable-next-line
-      this.$emit('choose', { parent: item.value, layer: child });
-    },
   },
 });
 </script>
 
-<style lang="scss" scoped>
-.box-layers{
-  position: absolute;
-  left: 0px;
-  top: 36px;
-  background-color: white;
-  box-shadow: 0px 2px 4px 0px rgb(54 58 80 / 30%);
-  .group-row{
-    width: 120px;
-    .group-name{
-      cursor: default;
-      .name{
-        padding: 3px 5px;
-        display: inline-block;
-        &:hover{
-          color: aqua;
-        }
-      }
-      .group-children{
-        display: none;
-        position: absolute;
-        left: 100%;
-        margin-top: -20px;
-        width: 140px;
-        background-color: white;
-        .layer-name{
-          cursor: pointer;
-          &:hover{
-            color: aqua;
-          }
-        }
-      }
-      &:hover .group-children{
-        display: block;
-      }
-    }
-  }
-}
-
-</style>
