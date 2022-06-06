@@ -70,11 +70,11 @@
 
 <script>
 import {defineComponent} from 'vue';
-import TMap from '../utils/t-map.js';
+import baseMap from '../utils/baseMap.js';
 import LayerControl from './LayerControl.vue';
 import AreaChoose from './AreaChoose.vue';
 import SaveDiablog from './Save.vue';
-import FileSave from '../utils/file-save.js';
+import FileSave from '../utils/fileSave.js';
 import HelpDiablog from './Help.vue';
 import MapKey from './MapKey.vue';
 import Tips from './Tips.vue';
@@ -111,14 +111,14 @@ export default defineComponent({
       downloadExtent: {},
       helpVisible: false,
       setVisible: false,
-      saveLayers: null,
+      saveLayers: [],
     };
   },
   computed: {
 
   },
   mounted() {
-    map = new TMap('map');
+    map = new baseMap('map');
     this.addMapRightClickHandle();
   },
   methods: {

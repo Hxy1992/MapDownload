@@ -44,7 +44,7 @@
 
 <script>
 import {defineComponent} from 'vue';
-import {getKeys, setKeys} from '/@/utils/map-key.js';
+import {getKeys, setKeys} from '/@/utils/mapKey.js';
 export default defineComponent({
   name: 'MapKey',
   props: {

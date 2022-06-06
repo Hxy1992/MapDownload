@@ -1,4 +1,4 @@
-import { getKeys } from '/@/utils/map-key.js';
+import { getKeys } from '/@/utils/mapKey.js';
 
 
 export default function getParams() {

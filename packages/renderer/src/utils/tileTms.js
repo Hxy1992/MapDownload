@@ -1,5 +1,6 @@
 // 瓦片转换
-import { setState, setProgress } from './progress';
+import { setState } from './progress';
+import { downloadLoop } from './download';
 // 经纬度转瓦片行列号
 function long2tile(lon, zoom) {
   return (Math.floor((lon + 180) / 360 * Math.pow(2, zoom)));
@@ -30,8 +31,7 @@ export class TileTMS {
     this.apiEnsureDirSync = apiEnsureDirSync;
     this.titleLayer = data.mapConfig.titleLayer;
     setState(true);
-    this.calcTiles();
-    this.download();
+    downloadLoop(this.calcTiles(), this.apiDownload);
   }
   calcTiles() {
     // 当前绝对路径
@@ -70,38 +70,7 @@ export class TileTMS {
         }
       }
     }
-    this.list = list;
-  }
-  download() {
-    let index = 0;
-    const length = this.list.length;
-    if (length === 0) return;
-    const list = this.list;
-    const apiDownload = this.apiDownload;
-    const statistics = {success: 0, error: 0, percentage: 0, count: length};
-    const download = () => {
-      if (index >= length) {
-        statistics.percentage = 100;
-        setProgress(statistics);
-        setState(false);
-        window.$message.success(`下载完成。下载成功${statistics.success}，下载失败${statistics.error}`);
-        return;
-      }
-      const item = list[index];
-      statistics.percentage = Number((index / length * 100).toFixed(2));
-      apiDownload(item);
-      index++;
-    };
-    download();
-    window.electron.imageDownloadDone(state => {
-      if (state.state === 'completed') {
-        statistics.success++;
-      } else {
-        statistics.error++;
-      }
-      setProgress(statistics);
-      download();
-    });
+    return list;
   }
 }
 
@@ -123,8 +92,7 @@ export class TileTMSList {
     data.mapConfig.titleLayer.forEach(layer => {
       list = [...list, ...this.calcTiles(layer.config().style, layer)];
     });
-    this.list = list;
-    this.download();
+    downloadLoop(list, this.apiDownload);
   }
   calcTiles(subpath, layer) {
     // 当前绝对路径
@@ -163,37 +131,6 @@ export class TileTMSList {
     }
     return list;
   }
-  download() {
-    let index = 0;
-    const length = this.list.length;
-    if (length === 0) return;
-    const list = this.list;
-    const apiDownload = this.apiDownload;
-    const statistics = {success: 0, error: 0, percentage: 0, count: length};
-    const download = () => {
-      if (index >= length) {
-        statistics.percentage = 100;
-        setProgress(statistics);
-        setState(false);
-        window.$message.success(`下载完成。下载成功${statistics.success}，下载失败${statistics.error}`);
-        return;
-      }
-      const item = list[index];
-      statistics.percentage = Number((index / length * 100).toFixed(2));
-      apiDownload(item);
-      index++;
-    };
-    download();
-    window.electron.imageDownloadDone(state => {
-      if (state.state === 'completed') {
-        statistics.success++;
-      } else {
-        statistics.error++;
-      }
-      setProgress(statistics);
-      download();
-    });
-  }
 }
 
 /**
@@ -210,8 +147,7 @@ export class TileTMSList {
     this.titleLayer = data.mapConfig.titleLayer;
     setState(true);
 
-    this.list = this.calcTiles(data.mapConfig.titleLayer);
-    this.download();
+    downloadLoop(this.calcTiles(data.mapConfig.titleLayer), this.apiDownload);
   }
   calcTiles(layers) {
     // 当前绝对路径
@@ -249,36 +185,5 @@ export class TileTMSList {
       }
     }
     return list;
-  }
-  download() {
-    let index = 0;
-    const length = this.list.length;
-    if (length === 0) return;
-    const list = this.list;
-    const apiDownload = this.apiDownload;
-    const statistics = {success: 0, error: 0, percentage: 0, count: length};
-    const download = () => {
-      if (index >= length) {
-        statistics.percentage = 100;
-        setProgress(statistics);
-        setState(false);
-        window.$message.success(`下载完成。下载成功${statistics.success}，下载失败${statistics.error}`);
-        return;
-      }
-      const item = list[index];
-      statistics.percentage = Number((index / length * 100).toFixed(2));
-      apiDownload(item);
-      index++;
-    };
-    download();
-    window.electron.imageDownloadDone(state => {
-      if (state.state === 'completed') {
-        statistics.success++;
-      } else {
-        statistics.error++;
-      }
-      setProgress(statistics);
-      download();
-    });
   }
 }

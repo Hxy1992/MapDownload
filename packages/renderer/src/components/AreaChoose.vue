@@ -29,7 +29,7 @@
 
 <script>
 import {defineComponent, ref} from 'vue';
-import {getAreaList} from '/@/utils/area-list.js';
+import {getAreaList} from '/@/utils/areaList.js';
 export default defineComponent({
   name: 'AreaChoose',
   components: {

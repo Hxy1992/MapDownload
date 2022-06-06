@@ -15,7 +15,7 @@
         label-placement="left"
         title="下载范围"
         size="small"
-        column="1"
+        :column="1"
         class="descriptions"
       >
         <n-descriptions-item label="xmin">

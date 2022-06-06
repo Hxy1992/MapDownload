@@ -1,5 +1,6 @@
 // 瓦片转换
-import { setState, setProgress } from './progress';
+import { setState } from './progress';
+import { downloadLoop } from './download';
 
 // const x_pi = Math.PI * 3000.0 / 180.0;
 // const pi = Math.PI;  // π
@@ -136,8 +137,7 @@ class TileBaidu {
     this.apiEnsureDirSync = apiEnsureDirSync;
     this.titleLayer = data.mapConfig.titleLayer;
     setState(true);
-    this.calcTiles();
-    this.download();
+    downloadLoop(this.calcTiles(), this.apiDownload);
   }
   calcTiles() {
     // 当前绝对路径
@@ -176,38 +176,7 @@ class TileBaidu {
         }
       }
     }
-    this.list = list;
-  }
-  download() {
-    let index = 0;
-    const length = this.list.length;
-    if (length === 0) return;
-    const list = this.list;
-    const apiDownload = this.apiDownload;
-    const statistics = { success: 0, error: 0, percentage: 0, count: length };
-    const download = () => {
-      if (index >= length) {
-        statistics.percentage = 100;
-        setProgress(statistics);
-        setState(false);
-        window.$message.success(`下载完成。下载成功${statistics.success}，下载失败${statistics.error}`);
-        return;
-      }
-      const item = list[index];
-      statistics.percentage = Number((index / length * 100).toFixed(2));
-      apiDownload(item);
-      index++;
-    };
-    download();
-    window.electron.imageDownloadDone(state => {
-      if (state.state === 'completed') {
-        statistics.success++;
-      } else {
-        statistics.error++;
-      }
-      setProgress(statistics);
-      download();
-    });
+    return list;
   }
 }
 

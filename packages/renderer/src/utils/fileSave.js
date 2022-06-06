@@ -1,8 +1,8 @@
 // 地图
-import {TileTMS, TileTMSList, TileTMSListMerge} from './tile-tms';
-import TileBaidu from './tile-baidu';
+import {TileTMS, TileTMSList, TileTMSListMerge} from './tileTms';
+import TileBaidu from './tileBaidu';
 import { getState } from './progress';
-class FileSave{
+export default class FileSave{
   constructor(data) {
     const projection = data.mapConfig.projection.code; // BAIDU,EPSG:4326,EPSG:3857
     if (getState()) {
@@ -51,5 +51,3 @@ class FileSave{
     new TileBaidu(data, this.saveImage, this.ensureDirSync);
   }
 }
-
-export default FileSave;

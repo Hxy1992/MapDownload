@@ -22,8 +22,8 @@
 
 <script>
 import {defineComponent, ref} from 'vue';
-import {getMapList} from '/@/utils/layer-list.js';
-import {getKeys} from '/@/utils/map-key.js';
+import {getMapList} from '/@/utils/layerList.js';
+import {getKeys} from '/@/utils/mapKey.js';
 import { Layers } from '@vicons/ionicons5';
 export default defineComponent({
   name: 'LayerControl',

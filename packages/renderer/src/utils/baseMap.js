@@ -1,7 +1,7 @@
 // 地图
 import * as maptalks from 'maptalks';
 import TileLayerCollection from './TileLayerCollection/TileLayerCollection';
-import {defaultMap} from './layer-list';
+import {defaultMap} from './layerList';
 
 const defaultTileOption = {
   maxCacheSize: 1000,
@@ -12,7 +12,7 @@ const defaultTileOption = {
   crossOrigin: null, // 瓦片跨域
   repeatWorld: false,
 };
-class TMap{
+export default class baseMap{
   constructor(id) {
     this.createMap(id);
   }
@@ -164,5 +164,3 @@ class TMap{
     this.map.fitExtent(this._vectorLayer.getExtent(), 0);
   }
 }
-
-export default TMap;
