@@ -17,7 +17,8 @@
     "pretest": "npm run build",
     "test": "node tests/app.spec.js",
     "watch": "node scripts/watch.js",
-    "lint": "eslint . --ext js,ts,vue"
+    "lint": "eslint . --ext js,ts,vue",
+    "dev": "npm run watch"
   },
   "browserslist": [
     "Chrome 96"

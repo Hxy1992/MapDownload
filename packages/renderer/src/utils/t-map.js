@@ -23,6 +23,9 @@ class TMap{
       zoomControl : true, // 缩放控件
       scaleControl : true, // 比例尺控件
       fog: false,
+      dragRotatePitch: false,
+      dragRotate: false,
+      dragPitch: false,
     });
     this._vectorLayer = new maptalks.VectorLayer('vector').addTo(map);
     this.map = map;
@@ -118,16 +121,43 @@ class TMap{
     }
   }
   // 添加geojson至地图
-  addGeometry(geojson) {
+  addGeometry(geojson, events = false, cb = null) {
     const geometry = maptalks.GeoJSON.toGeometry(geojson, geo => {
-      geo.setSymbol({
+      const polygonStyle = {
         lineColor: '#34495e',
         lineWidth: 2,
         polygonFill: 'rgb(135,196,240)',
         polygonOpacity: 0.6,
-      });
+      };
+      const labelStyle = {
+        'textName'  : '点击下载',
+        'textFill' : '#34495e',
+        'textPlacement' : 'polygon',
+        'textSize'  : 16,
+      };
+      if (geo.getType() === 'MultiPolygon' && geo.getGeometries().length > 1) {
+        geo.setSymbol({
+          ...polygonStyle,
+        });
+        geo.getGeometries()[0].setSymbol({
+          ...polygonStyle,
+          ...labelStyle,
+        });
+      } else {
+        geo.setSymbol({
+          ...polygonStyle,
+          ...labelStyle,
+        });
+      }
     });
     this._vectorLayer.addGeometry(geometry);
+
+    if (events && geometry && geometry.length > 0) {
+      geometry[0].on('click', (event) => {
+        if (typeof cb === 'function') cb(event);
+      });
+    }
+
   }
   // 自动适应地图范围
   fitExtent() {

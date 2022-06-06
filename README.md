@@ -18,7 +18,7 @@
 npm install
 
 # 热更新服务
-npm run watch
+npm run dev / npm run watch
 
 # 构建web
 npm run build

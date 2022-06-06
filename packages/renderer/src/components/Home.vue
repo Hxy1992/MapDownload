@@ -132,7 +132,7 @@ export default defineComponent({
         this.hideDrawTips();
         this._drawStartInfo = window.$notification.create({
           content: '已开启矩形绘制，右键下载瓦片',
-          duration: 5000,
+          duration: 10000,
         });
         map.startDraw();
       } else {
@@ -196,7 +196,9 @@ export default defineComponent({
       // 添加区域至地图
       const {option, geojson} = data;
       console.log(option);
-      map.addGeometry(geojson);
+      map.addGeometry(geojson, true, () => {
+        this.showSave();
+      });
       map.fitExtent();
     },
     showGrid(val) {
