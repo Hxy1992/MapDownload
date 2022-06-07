@@ -168,6 +168,7 @@ export default defineComponent({
       const {titleLayer} = map.getBaseMapConfig();
       this.saveLayers = titleLayer;
       this.saveVisible = true;
+      map.fitExtent();
       return true;
     },
     save(val) {
@@ -194,8 +195,8 @@ export default defineComponent({
       map.endDraw();
       this.hideDrawTips();
       // 添加区域至地图
-      const {option, geojson} = data;
-      console.log(option);
+      const {geojson} = data;
+      // console.log(option);
       map.addGeometry(geojson, true, () => {
         this.showSave();
       });

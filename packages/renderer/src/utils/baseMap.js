@@ -102,6 +102,18 @@ export default class baseMap{
     if (!this._vectorLayer) return null;
     return this._vectorLayer.getExtent();
   }
+  // 获取下载Geometry
+  getDownloadGeometries() {
+    if (!this._vectorLayer) return null;
+    const geo = this._vectorLayer.getGeometries()[0];
+    if (geo.getType() === 'MultiPolygon' && geo.getGeometries().length > 1) {
+      return geo.getGeometries();
+    } else if(geo.getType() !== 'MultiPolygon') {
+      return geo;
+    } else {
+      return null;
+    }
+  }
   // 获取瓦片图层参数
   getBaseMapConfig() {
     const baseMap = this.map.getBaseLayer();
@@ -163,4 +175,72 @@ export default class baseMap{
   fitExtent() {
     this.map.fitExtent(this._vectorLayer.getExtent(), 0);
   }
+}
+
+let _testDraw;
+let _testPrj;
+/**
+ * 根据行列号绘制瓦片外框
+ * @param {*} tileLayer
+ * @param {*} tileConfig
+ */
+export function testDraw(tileLayer, tileConfig) {
+  if (!_testDraw) {
+    const map = tileLayer.getMap();
+    _testDraw = new maptalks.VectorLayer('test-vector').addTo(map);
+    _testPrj = _testDraw.getProjection();
+  }
+  const extent = calcExtentByTile(tileLayer, tileConfig);
+  const left = _testPrj.unproject({x:extent.xmin, y:extent.ymin});
+  const right = _testPrj.unproject({x:extent.xmax, y:extent.ymax});
+  const polygon = new maptalks.Polygon([
+    [
+      [left.x, -right.y],
+      [right.x, -right.y],
+      [right.x, -left.y],
+      [left.x, -left.y],
+      [left.x, -right.y],
+    ],
+  ], {
+    visible : true,
+    editable : false,
+    cursor : 'pointer',
+    shadowBlur : 0,
+    shadowColor : 'black',
+    draggable : false,
+    dragShadow : false,
+    drawOnAxis : null,
+    symbol: {
+      'lineColor' : '#34495e',
+      'lineWidth' : 1,
+      'polygonFill' : 'rgb(135,196,240)',
+      'polygonOpacity' : 0.3,
+    },
+  });
+  _testDraw.addGeometry(polygon);
+}
+
+/**
+ * 根据行列号计算瓦片坐标范围
+ * 不支持瓦片：百度
+ * @param {TileLayer} tileLayer 瓦片图层对象
+ * @param {Object} tileConfig x, y, zoom 行列号和层级
+ * @returns 坐标范围
+ */
+export function calcExtentByTile(tileLayer, tileConfig) {
+  const { x, y, z } = tileConfig;
+  const { width, height } = tileLayer.getTileSize();
+  const spatialReference = tileLayer.getSpatialReference();
+  const resolution = spatialReference.getResolution(z);
+  const fullExtent = spatialReference.getFullExtent();
+  const xmin = resolution * x * width + fullExtent.xmin;
+  const xmax = xmin + width * resolution;
+  const ymin = resolution * y * height + fullExtent.ymin;
+  const ymax = ymin + height * resolution;
+  return {
+    xmin,
+    xmax,
+    ymin,
+    ymax,
+  };
 }

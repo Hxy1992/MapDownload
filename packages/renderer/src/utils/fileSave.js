@@ -1,6 +1,6 @@
 // 地图
-import {TileTMS, TileTMSList, TileTMSListMerge} from './tileTms';
-import TileBaidu from './tileBaidu';
+import {TileTMS, TileTMSList, TileTMSListMerge} from './fileSaveTms';
+import TileBaidu from './fileSaveBaidu';
 import { getState } from './progress';
 export default class FileSave{
   constructor(data) {
