@@ -2,6 +2,7 @@
 import * as maptalks from 'maptalks';
 import TileLayerCollection from './TileLayerCollection/TileLayerCollection';
 import {defaultMap} from './layerList';
+import {ref} from 'vue';
 
 const defaultTileOption = {
   maxCacheSize: 1000,
@@ -129,12 +130,16 @@ export default class baseMap{
         config: layers.map(temp => {return temp.config();}),
         projection: baseMap.getProjection(),
         titleLayer: layers,
+        maxZoom: baseMap.getMaxZoom(),
+        minZoom: baseMap.getMinZoom(),
       };
     } else {
       return {
         config: baseMap.config(),
         projection: baseMap.getProjection(),
         titleLayer: baseMap,
+        maxZoom: baseMap.getMaxZoom(),
+        minZoom: baseMap.getMinZoom(),
       };
     }
   }
@@ -181,6 +186,15 @@ export default class baseMap{
   fitExtent() {
     this.map.fitExtent(this._vectorLayer.getExtent(), 0);
   }
+}
+
+// 地图加载状态
+const MapLoading = ref(false);
+export function setMapLoading(val) {
+  MapLoading.value = val;
+}
+export function getMapLoading() {
+  return MapLoading;
 }
 
 let _testDraw;

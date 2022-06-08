@@ -13,6 +13,7 @@ import {
   NDescriptionsItem,
   NPopover,
   NTree,
+  NSpin,
 } from 'naive-ui';
 
 const naive = create({
@@ -28,6 +29,7 @@ const naive = create({
     NDescriptionsItem,
     NPopover,
     NTree,
+    NSpin,
   ],
 });
 

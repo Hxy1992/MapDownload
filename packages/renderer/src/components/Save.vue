@@ -51,7 +51,7 @@
         v-if="showMerge"
         class="item"
       >
-        <span class="label">标注下载：</span>
+        <span class="label">合并标注：</span>
         <div class="value">
           <input
             v-model="mergeLayers"
@@ -65,7 +65,6 @@
           <input
             v-model="clipImage"
             type="checkbox"
-            disabled
           >
         </div>
       </div>
@@ -122,6 +121,10 @@ export default defineComponent({
     limitMaxZoom: {
       required: true,
       type: Number,
+    },
+    isBaidu: {
+      required: true,
+      type: Boolean,
     },
   },
   setup() {
@@ -186,12 +189,16 @@ export default defineComponent({
       if (minZoom >= maxZoom || minZoom < this.limitMinZoom || maxZoom > this.limitMaxZoom) {
         return window.$message.warning('层级格式错误');
       }
+      if (this.isBaidu && this.clipImage) {
+        return window.$message.warning('百度瓦片暂不支持裁切，请取消裁切后重试');
+      }
       const param = {
         savePath: this.savePath,
         minZoom: minZoom,
         maxZoom: maxZoom,
         mergeLayers: this.mergeLayers,
         extent: this.downloadExtent,
+        clipImage: this.clipImage,
       };
       // eslint-disable-next-line
       this.$emit('ok', param);

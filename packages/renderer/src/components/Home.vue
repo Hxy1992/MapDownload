@@ -1,5 +1,10 @@
 <template>
-  <div id="map" />
+  <n-spin
+    class="loadingSpin"
+    :show="mapLoading"
+  >
+    <div id="map" />
+  </n-spin>
   <div class="box-controls">
     <layer-control
       @choose="chooseLayers"
@@ -54,6 +59,7 @@
       :base-layer="saveLayers"
       :limit-max-zoom="limitMaxZoom"
       :limit-min-zoom="limitMinZoom"
+      :is-baidu="isBaidu"
       @ok="save"
       @cancel="cancelSave"
     />
@@ -73,6 +79,7 @@
 <script>
 import {defineComponent} from 'vue';
 import baseMap from '../utils/baseMap.js';
+import {setMapLoading,getMapLoading} from '../utils/baseMap.js';
 import LayerControl from './LayerControl.vue';
 import AreaChoose from './AreaChoose.vue';
 import SaveDiablog from './Save.vue';
@@ -105,6 +112,10 @@ export default defineComponent({
   setup() {
     window.$message = useMessage();
     window.$notification = useNotification();
+    const mapLoading = getMapLoading();
+    return {
+      mapLoading: mapLoading,
+    };
   },
   data() {
     return {
@@ -116,10 +127,10 @@ export default defineComponent({
       saveLayers: [],
       limitMinZoom: 1,
       limitMaxZoom: 18,
+      isBaidu: false,
     };
   },
   computed: {
-
   },
   mounted() {
     map = new baseMap('map');
@@ -169,12 +180,14 @@ export default defineComponent({
         if (showMsg) window.$message.warning('获取下载范围错误，请重新绘制下载范围');
         return false;
       }
-      const {titleLayer} = map.getBaseMapConfig();
+      const {titleLayer,maxZoom,minZoom,projection} = map.getBaseMapConfig();
       this.saveLayers = titleLayer;
-      this.limitMaxZoom = titleLayer.getMaxZoom();
-      this.limitMinZoom = titleLayer.getMinZoom();
+      this.limitMaxZoom = maxZoom;
+      this.limitMinZoom = minZoom;
+      this.isBaidu = projection.code === 'BAIDU';
       this.saveVisible = true;
       map.fitExtent();
+      setMapLoading(true);
       return true;
     },
     save(val) {
@@ -184,6 +197,7 @@ export default defineComponent({
       new FileSave(val);
     },
     cancelSave() {
+      setMapLoading(false);
       this.saveVisible = false;
     },
     showHelp(val) {
@@ -217,6 +231,13 @@ export default defineComponent({
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" scoped>
+.loadingSpin{
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+}
 #map{
   position: absolute;
   margin: 0;

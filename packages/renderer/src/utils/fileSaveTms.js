@@ -1,6 +1,7 @@
 // 瓦片转换
 import { setState } from './progress';
 import { downloadLoop } from './download';
+import {setMapLoading} from './baseMap.js';
 
 /**
  * 下载TMS瓦片
@@ -39,6 +40,7 @@ export class TileTMS {
         list.push({zoom: tile.z, url:tile.url, savePath});
       }
     }
+    setMapLoading(false);
     return list;
   }
 }
@@ -61,6 +63,7 @@ export class TileTMSList {
     data.mapConfig.titleLayer.forEach(layer => {
       list = [...list, ...this.calcTiles(layer.config().style, layer)];
     });
+    setMapLoading(false);
     downloadLoop(list, this.apiDownload);
   }
   calcTiles(subpath, layer) {
@@ -148,7 +151,7 @@ export class TileTMSList {
         }
       });
     }
-
+    setMapLoading(false);
     return Object.values(storeMap);
   }
 }
