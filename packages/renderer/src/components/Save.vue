@@ -115,6 +115,14 @@ export default defineComponent({
       required: true,
       type: [Object, Array],
     },
+    limitMinZoom: {
+      required: true,
+      type: Number,
+    },
+    limitMaxZoom: {
+      required: true,
+      type: Number,
+    },
   },
   setup() {
 
@@ -175,7 +183,7 @@ export default defineComponent({
       if (isNaN(minZoom) || isNaN(maxZoom)) {
         return window.$message.warning('层级格式错误，请输入非负整数');
       }
-      if (minZoom >= maxZoom || minZoom < 0 || maxZoom > 18) {
+      if (minZoom >= maxZoom || minZoom < this.limitMinZoom || maxZoom > this.limitMaxZoom) {
         return window.$message.warning('层级格式错误');
       }
       const param = {

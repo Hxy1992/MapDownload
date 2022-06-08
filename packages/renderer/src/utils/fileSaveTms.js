@@ -2,8 +2,6 @@
 import { setState } from './progress';
 import { downloadLoop } from './download';
 
-// import {testDraw} from './baseMap';
-
 /**
  * 下载TMS瓦片
  */
@@ -39,8 +37,6 @@ export class TileTMS {
         this.apiEnsureDirSync(temppath);
         const savePath = temppath + '\\' + tile.y + pictureType;
         list.push({zoom: tile.z, url:tile.url, savePath});
-
-        // testDraw(this.titleLayer, tile); // 测试-绘制瓦片外框
       }
     }
     return list;

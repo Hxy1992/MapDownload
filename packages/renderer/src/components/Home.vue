@@ -52,6 +52,8 @@
       :visible="saveVisible"
       :download-extent="downloadExtent"
       :base-layer="saveLayers"
+      :limit-max-zoom="limitMaxZoom"
+      :limit-min-zoom="limitMinZoom"
       @ok="save"
       @cancel="cancelSave"
     />
@@ -112,6 +114,8 @@ export default defineComponent({
       helpVisible: false,
       setVisible: false,
       saveLayers: [],
+      limitMinZoom: 1,
+      limitMaxZoom: 18,
     };
   },
   computed: {
@@ -167,6 +171,8 @@ export default defineComponent({
       }
       const {titleLayer} = map.getBaseMapConfig();
       this.saveLayers = titleLayer;
+      this.limitMaxZoom = titleLayer.getMaxZoom();
+      this.limitMinZoom = titleLayer.getMinZoom();
       this.saveVisible = true;
       map.fitExtent();
       return true;

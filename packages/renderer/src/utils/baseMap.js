@@ -51,11 +51,17 @@ export default class baseMap{
       // attribution: param.layer.attribution,
       ...param.layer.exteral,
     });
-    this.map.removeBaseLayer(this.map.getBaseLayer());
+    const oldBaseLayer = this.map.getBaseLayer();
+    if (oldBaseLayer && oldBaseLayer.config()?.debug) {
+      baseLayer.config({debug: true});
+    }
+    this.map.removeBaseLayer(oldBaseLayer);
     this.map.setBaseLayer(baseLayer);
     this.map.setSpatialReference({
       projection : param.layer.prejection,
     });
+
+    // testDraw(this.map.getBaseLayer(), {x:24,y:12,z:5}); // 测试-绘制瓦片外框
   }
   // 绘制矩形、编辑矩形位置
   startDraw() {
@@ -178,7 +184,6 @@ export default class baseMap{
 }
 
 let _testDraw;
-let _testPrj;
 /**
  * 根据行列号绘制瓦片外框
  * @param {*} tileLayer
@@ -188,18 +193,16 @@ export function testDraw(tileLayer, tileConfig) {
   if (!_testDraw) {
     const map = tileLayer.getMap();
     _testDraw = new maptalks.VectorLayer('test-vector').addTo(map);
-    _testPrj = _testDraw.getProjection();
   }
+  _testDraw.clear();
   const extent = calcExtentByTile(tileLayer, tileConfig);
-  const left = _testPrj.unproject({x:extent.xmin, y:extent.ymin});
-  const right = _testPrj.unproject({x:extent.xmax, y:extent.ymax});
   const polygon = new maptalks.Polygon([
     [
-      [left.x, -right.y],
-      [right.x, -right.y],
-      [right.x, -left.y],
-      [left.x, -left.y],
-      [left.x, -right.y],
+      [extent.xmin, extent.ymax],
+      [extent.xmax, extent.ymax],
+      [extent.xmax, extent.ymin],
+      [extent.xmin, extent.ymin],
+      [extent.xmin, extent.ymax],
     ],
   ], {
     visible : true,
@@ -215,6 +218,10 @@ export function testDraw(tileLayer, tileConfig) {
       'lineWidth' : 1,
       'polygonFill' : 'rgb(135,196,240)',
       'polygonOpacity' : 0.3,
+      'textName'  : `X: ${tileConfig.x}, Y: ${tileConfig.y}, Z: ${tileConfig.z}`,
+      'textFill' : '#34495e',
+      'textPlacement' : 'polygon',
+      'textSize'  : 16,
     },
   });
   _testDraw.addGeometry(polygon);
@@ -231,16 +238,24 @@ export function calcExtentByTile(tileLayer, tileConfig) {
   const { x, y, z } = tileConfig;
   const { width, height } = tileLayer.getTileSize();
   const spatialReference = tileLayer.getSpatialReference();
+  const prj = spatialReference.getProjection();
   const resolution = spatialReference.getResolution(z);
   const fullExtent = spatialReference.getFullExtent();
-  const xmin = resolution * x * width + fullExtent.xmin;
-  const xmax = xmin + width * resolution;
-  const ymin = resolution * y * height + fullExtent.ymin;
-  const ymax = ymin + height * resolution;
-  return {
-    xmin,
-    xmax,
-    ymin,
-    ymax,
-  };
+
+  if (spatialReference.getProjection().code === 'BAIDU') {
+    throw new Error('暂不支持百度');
+  } else {
+    const xmin = resolution * x * width + fullExtent.xmin;
+    const xmax = xmin + width * resolution;
+    const ymin = resolution * y * height + fullExtent.ymin;
+    const ymax = ymin + height * resolution;
+    const leftBottom = prj.unproject({x:xmin, y:ymin});
+    const rightTop = prj.unproject({x:xmax, y:ymax});
+    return {
+      xmin: leftBottom.x,
+      xmax: rightTop.x,
+      ymin: -leftBottom.y,
+      ymax: -rightTop.y,
+    };
+  }
 }
