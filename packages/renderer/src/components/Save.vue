@@ -32,17 +32,17 @@
         </n-descriptions-item>
       </n-descriptions>
       <div class="item">
-        <span class="label">最大层级：</span>
+        <span class="label">最小层级：</span>
         <input
-          v-model="maxZoom"
+          v-model="minZoom"
           class="value"
           type="text"
         >
       </div>
       <div class="item">
-        <span class="label">最小层级：</span>
+        <span class="label">最大层级：</span>
         <input
-          v-model="minZoom"
+          v-model="maxZoom"
           class="value"
           type="text"
         >
@@ -186,7 +186,7 @@ export default defineComponent({
       if (isNaN(minZoom) || isNaN(maxZoom)) {
         return window.$message.warning('层级格式错误，请输入非负整数');
       }
-      if (minZoom >= maxZoom || minZoom < this.limitMinZoom || maxZoom > this.limitMaxZoom) {
+      if (minZoom > maxZoom || minZoom < this.limitMinZoom || maxZoom > this.limitMaxZoom) {
         return window.$message.warning('层级格式错误');
       }
       if (this.isBaidu && this.clipImage) {

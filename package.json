@@ -42,6 +42,11 @@
     "vite": "2.6.14"
   },
   "dependencies": {
+    "@turf/boolean-contains": "^6.5.0",
+    "@turf/boolean-crosses": "^6.5.0",
+    "@turf/boolean-disjoint": "^6.5.0",
+    "@turf/helpers": "^6.5.0",
+    "@turf/intersect": "^6.5.0",
     "electron-updater": "4.6.2",
     "fs-extra": "^10.0.0",
     "maptalks": "^1.0.0-beta.7",

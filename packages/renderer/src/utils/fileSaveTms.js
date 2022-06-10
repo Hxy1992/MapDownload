@@ -1,6 +1,6 @@
 // 瓦片转换
 import { setState } from './progress';
-import { downloadLoop } from './download';
+import { downloadLoop, downloadClipLoop } from './download';
 import {setMapLoading} from './baseMap.js';
 
 /**
@@ -8,7 +8,6 @@ import {setMapLoading} from './baseMap.js';
  */
 export class TileTMS {
   constructor(data, apiDownload, apiEnsureDirSync) {
-    this.apiDownload = apiDownload;
     this.rootPath = data.savePath; // 文件根目录
     this.maxZoom = data.maxZoom;
     this.minZoom = data.minZoom;
@@ -18,7 +17,12 @@ export class TileTMS {
     this.apiEnsureDirSync = apiEnsureDirSync;
     this.titleLayer = data.mapConfig.titleLayer;
     setState(true);
-    downloadLoop(this.calcTiles(), this.apiDownload);
+    const list = this.calcTiles();
+    if (data.clipImage) {
+      downloadClipLoop(list, apiDownload, this.titleLayer, data.downloadGeometry);
+    } else {
+      downloadLoop(list, apiDownload);
+    }
   }
   calcTiles() {
     // 当前绝对路径
@@ -37,7 +41,7 @@ export class TileTMS {
         const temppath = downloadPath + tile.z + '\\' + tile.x;
         this.apiEnsureDirSync(temppath);
         const savePath = temppath + '\\' + tile.y + pictureType;
-        list.push({zoom: tile.z, url:tile.url, savePath});
+        list.push({zoom: tile.z, url:tile.url, savePath, x:tile.x, y:tile.y});
       }
     }
     setMapLoading(false);
@@ -50,7 +54,6 @@ export class TileTMS {
  */
 export class TileTMSList {
   constructor(data, apiDownload, apiEnsureDirSync) {
-    this.apiDownload = apiDownload;
     this.rootPath = data.savePath; // 文件根目录
     this.maxZoom = data.maxZoom;
     this.minZoom = data.minZoom;
@@ -64,7 +67,12 @@ export class TileTMSList {
       list = [...list, ...this.calcTiles(layer.config().style, layer)];
     });
     setMapLoading(false);
-    downloadLoop(list, this.apiDownload);
+
+    if (data.clipImage) {
+      downloadClipLoop(list, apiDownload, this.titleLayer[0], data.downloadGeometry);
+    } else {
+      downloadLoop(list, apiDownload);
+    }
   }
   calcTiles(subpath, layer) {
     // 当前绝对路径
@@ -85,7 +93,7 @@ export class TileTMSList {
           const temppath = downloadPath + tile.z + '\\' + tile.x;
           this.apiEnsureDirSync(temppath);
           const savePath = temppath + '\\' + tile.y + pictureType;
-          list.push({zoom: tile.z, url:tile.url, savePath});
+          list.push({zoom: tile.z, url:tile.url, savePath, x:tile.x, y:tile.y});
         }
       });
     }
@@ -98,7 +106,6 @@ export class TileTMSList {
  */
  export class TileTMSListMerge {
   constructor(data, apiDownload, apiEnsureDirSync) {
-    this.apiDownload = apiDownload;
     this.rootPath = data.savePath; // 文件根目录
     this.maxZoom = data.maxZoom;
     this.minZoom = data.minZoom;
@@ -106,7 +113,13 @@ export class TileTMSList {
     this.apiEnsureDirSync = apiEnsureDirSync;
     this.titleLayer = data.mapConfig.titleLayer;
     setState(true);
-    downloadLoop(this.calcTiles(), this.apiDownload);
+
+    const list = this.calcTiles();
+    if (data.clipImage) {
+      downloadClipLoop(list, apiDownload, this.titleLayer[0], data.downloadGeometry);
+    } else {
+      downloadLoop(list, apiDownload);
+    }
   }
   calcTiles() {
     // 当前绝对路径
@@ -135,7 +148,7 @@ export class TileTMSList {
               url: tile.url,
               isLabel: false,
             },
-          ], savePath};
+          ], savePath, x:tile.x, y:tile.y};
         }
       });
     }

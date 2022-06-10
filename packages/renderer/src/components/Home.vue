@@ -194,6 +194,9 @@ export default defineComponent({
       this.saveVisible = false;
       const mapConfig = map.getBaseMapConfig();
       val.mapConfig = mapConfig;
+      if (val.clipImage) {
+        val.downloadGeometry = map.getDownloadGeometry();
+      }
       new FileSave(val);
     },
     cancelSave() {

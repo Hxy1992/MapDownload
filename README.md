@@ -6,6 +6,8 @@
 
 > 支持卫星遥感影像和标注合并
 
+> 支持行政区划瓦片下载，裁切边界
+
 > 软件下载地址：https://github.com/Hxy1992/MapDownload/releases
 
 ![image](https://user-images.githubusercontent.com/14800641/154039927-e8994f36-523b-40cb-b184-46a7d8e1a9f2.png)
@@ -96,5 +98,6 @@ var map = new maptalks.Map('map', {
 ```
 
 # TODO
-+ 行政区划范围下载和瓦片裁切
++ 行政区划范围下载和瓦片裁切 - 部分完成
++ 下载瓦片格式，增加jpeg、png、webp支持
 + 自定义图层加载、下载，支持上传geojson作为下载范围

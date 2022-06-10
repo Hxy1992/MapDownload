@@ -39,15 +39,27 @@ export function ipcHandle(win) {
 
   // superagent & sharp 下载图片
   ipcMain.on('save-image', (event, args) => {
+    // sharp(base64Data).composite 反过来试试
     const sharpStream = sharp({
       failOnError: false,
     });
     const promises = [];
-    promises.push(
-      sharpStream
-        // .ensureAlpha()
-        .toFile(args.savePath),
-    );
+    if (args.imageBuffer) {
+      const base64Data = args.imageBuffer.replace(/^data:image\/\w+;base64,/, '');
+      const dataBuffer = Buffer.from(base64Data, 'base64');
+      promises.push(
+        sharpStream
+          .composite([{ input: dataBuffer, gravity: 'centre', blend: 'dest-in' }])
+          .toFile(args.savePath),
+      );
+    } else {
+      promises.push(
+        sharpStream
+          // .ensureAlpha()
+          .toFile(args.savePath),
+      );
+    }
+
     // got.stream(args.url).pipe(sharpStream);
     request.get(args.url).pipe(sharpStream);
     Promise.all(promises)
@@ -87,10 +99,22 @@ export function ipcHandle(win) {
         }
         // 结束保存
         if (index === args.layers.length - 1) {
-          sharp(imgBack)
-          .composite(imgBuffer.map(input => {
-            return { input, gravity: 'centre', blend: 'saturate' };
-          }))
+          let opration;
+          if (args.imageBuffer) {
+            const base64Data = args.imageBuffer.replace(/^data:image\/\w+;base64,/, '');
+            const dataBuffer = Buffer.from(base64Data, 'base64');
+            sharp(imgBack)
+            .composite(imgBuffer.map(input => {
+              return { input, gravity: 'centre', blend: 'saturate' };
+            }))
+            .composite([{ input: dataBuffer, gravity: 'centre', blend: 'dest-in' }]);
+          } else {
+            opration = sharp(imgBack)
+            .composite(imgBuffer.map(input => {
+              return { input, gravity: 'centre', blend: 'saturate' };
+            }));
+          }
+          opration
           .toFile(args.savePath)
           .then(() => {
             win.webContents.send('imageDownloadDone', {
