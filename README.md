@@ -102,3 +102,6 @@ var map = new maptalks.Map('map', {
 + 支持切换中英文瓦片
 + 下载瓦片格式，增加jpeg、png、webp支持
 + 自定义图层加载、下载，支持上传geojson作为下载范围
+
+
+注：软件仅作为学习交流使用
