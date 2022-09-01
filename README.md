@@ -99,7 +99,6 @@ var map = new maptalks.Map('map', {
 
 # TODO
 + 行政区划范围下载和瓦片裁切 - 部分完成
-+ 支持切换中英文瓦片
 + 下载瓦片格式，增加jpeg、png、webp支持
 + 自定义图层加载、下载，支持上传geojson作为下载范围
 

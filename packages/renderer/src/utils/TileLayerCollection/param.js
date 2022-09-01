@@ -57,15 +57,16 @@ export default function getParams() {
       Satellite_Label: {
         url: 'http://webst01.is.autonavi.com/appmaptile?style=8&x={x}&y={y}&z={z}',
       },
+      NormalEn: {
+        url: 'http://webrd01.is.autonavi.com/appmaptile?lang=en&size=1&scale=1&style=8&x={x}&y={y}&z={z}',
+      },
     },
     Tencent: {
       Normal: {
         url: 'http://rt0.map.gtimg.com/realtimerender?z={z}&x={x}&y={y}&type=vector&style=0',
-
       },
       Satellite: {
         url: 'http://p0.map.gtimg.com/sateTiles/{z}/{m}/{n}/{x}_{y}.jpg',
-
       },
       Satellite_Label: {
         url: 'http://rt3.map.gtimg.com/tile?z={z}&x={x}&y={y}&type=vector&styleid=3&version=117',

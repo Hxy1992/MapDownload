@@ -22,6 +22,14 @@ const mapList = [
           attribution: '高德-卫星地图',
         },
       },
+      {
+        label: '电子地图(英文)',
+        value: 'NormalEn',
+        prejection: 'EPSG:3857',
+        exteral: {
+          attribution: '高德-电子地图(英文)',
+        },
+      },
     ],
   },
   {
@@ -156,7 +164,7 @@ const mapList = [
         value: 'Normal',
         prejection: 'EPSG:3857',
         exteral: {
-          attribution: '腾讯-电子电梯',
+          attribution: '腾讯-电子地图',
         },
       },
       {
