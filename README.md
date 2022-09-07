@@ -8,6 +8,8 @@
 
 > 支持行政区划瓦片下载，裁切边界
 
+> 支持下载瓦片格式jpeg、png、webp
+
 > 软件下载地址：https://github.com/Hxy1992/MapDownload/releases
 
 ![image](https://user-images.githubusercontent.com/14800641/154039927-e8994f36-523b-40cb-b184-46a7d8e1a9f2.png)
