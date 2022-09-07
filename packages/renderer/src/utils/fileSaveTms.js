@@ -12,6 +12,7 @@ export class TileTMS {
     this.maxZoom = data.maxZoom;
     this.minZoom = data.minZoom;
     this.mapExtent = data.extent;
+    this.imageType = data.imageType;
     // this.projection = data.mapConfig.projection.code; // BAIDU,EPSG:4326,EPSG:3857
     this.urlTemplate = data.mapConfig.config.urlTemplate;
     this.apiEnsureDirSync = apiEnsureDirSync;
@@ -31,7 +32,7 @@ export class TileTMS {
     // 下载范围
     const zmin = this.minZoom;
     const zmax = this.maxZoom + 1;
-    const pictureType = '.png';
+    const pictureType = '.' + this.imageType;
     // 遍历URL，获取数据
     const list = [];
     for (let z = zmin; z < zmax; z++) {
@@ -58,6 +59,7 @@ export class TileTMSList {
     this.maxZoom = data.maxZoom;
     this.minZoom = data.minZoom;
     this.mapExtent = data.extent;
+    this.imageType = data.imageType;
     this.apiEnsureDirSync = apiEnsureDirSync;
     this.titleLayer = data.mapConfig.titleLayer;
     setState(true);
@@ -82,7 +84,7 @@ export class TileTMSList {
     const zmin = this.minZoom;
     const zmax = this.maxZoom + 1;
     // 下载地址
-    const pictureType = '.png';
+    const pictureType = '.' + this.imageType;
     // 遍历URL，获取数据
     const list = [];
     for (let z = zmin; z < zmax; z++) {
@@ -110,6 +112,7 @@ export class TileTMSList {
     this.maxZoom = data.maxZoom;
     this.minZoom = data.minZoom;
     this.mapExtent = data.extent;
+    this.imageType = data.imageType;
     this.apiEnsureDirSync = apiEnsureDirSync;
     this.titleLayer = data.mapConfig.titleLayer;
     setState(true);
@@ -129,7 +132,7 @@ export class TileTMSList {
     const zmin = this.minZoom;
     const zmax = this.maxZoom + 1;
     // 下载地址
-    const pictureType = '.png';
+    const pictureType = '.' + this.imageType;
 
     const imgLyr = this.titleLayer.find(t => { return !t.config().style.includes('_Label'); });
     const imgLyrLabel = this.titleLayer.find(t => { return t.config().style.includes('_Label'); });

@@ -14,6 +14,7 @@ import {
   NPopover,
   NTree,
   NSpin,
+  NSelect,
 } from 'naive-ui';
 
 const naive = create({
@@ -30,6 +31,7 @@ const naive = create({
     NPopover,
     NTree,
     NSpin,
+    NSelect,
   ],
 });
 

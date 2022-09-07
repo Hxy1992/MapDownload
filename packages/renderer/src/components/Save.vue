@@ -82,6 +82,15 @@
           </button>
         </div>
       </div>
+      <div class="item">
+        <span class="label">瓦片格式：</span>
+        <div class="value">
+          <n-select
+            v-model:value="imageType"
+            :options="imageTypeList"
+          />
+        </div>
+      </div>
     </div>
     <template #action>
       <n-button @click="cancel">
@@ -138,6 +147,21 @@ export default defineComponent({
       minZoom: '5',
       mergeLayers: false,
       clipImage: false,
+      imageType: 'png',
+      imageTypeList: [
+        {
+          label: 'png',
+          value: 'png',
+        },
+        {
+          label: 'jpeg',
+          value: 'jpeg',
+        },
+        {
+          label: 'webp',
+          value: 'webp',
+        },
+      ],
     };
   },
   computed: {
@@ -199,6 +223,7 @@ export default defineComponent({
         mergeLayers: this.mergeLayers,
         extent: this.downloadExtent,
         clipImage: this.clipImage,
+        imageType: this.imageType,
       };
       // eslint-disable-next-line
       this.$emit('ok', param);
