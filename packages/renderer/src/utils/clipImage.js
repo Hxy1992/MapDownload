@@ -74,11 +74,11 @@ export class ClipImage {
     const center = extent.getCenter();
     this.map.setCenterAndZoom(center, zoom);
   }
-  getImage() {
+  getImage(imageType) {
     return new Promise(resolve => {
       setTimeout(() => {
         const img = this.map.toDataURL({
-          'mimeType' : 'image/png',
+          'mimeType' : 'image/' + imageType,
           'save' : false,
         });
         resolve(img);

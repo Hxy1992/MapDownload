@@ -3,6 +3,7 @@ import { setState, setProgress } from './progress';
 // eslint-disable-next-line
 import { judgeTile, testDraw2 } from './baseMap';
 import { ClipImage } from './clipImage';
+const clipImage = new ClipImage();
 /**
  * 下载瓦片
  * @param {Array} list 瓦片列表
@@ -48,14 +49,13 @@ export function downloadLoop (list, apiDownload) {
  * @param {Function} apiDownload 下载方法
  * @param {maptalks.TileLayer} tileLayer 下载瓦片图层
  * @param {maptalks.Geometry} downloadGeometry 下载范围
+ * @param {String} imageType 瓦片格式
  * @returns
  */
-export function downloadClipLoop (list, apiDownload, tileLayer, downloadGeometry) {
+export function downloadClipLoop (list, apiDownload, tileLayer, downloadGeometry, imageType) {
   if (!Array.isArray(list) || typeof apiDownload !== 'function') return;
   const length = list.length;
   if (length === 0) return;
-
-  const clipImage = new ClipImage();
 
   // 获取坐标投影信息
   const { width, height } = tileLayer.getTileSize();
@@ -63,7 +63,6 @@ export function downloadClipLoop (list, apiDownload, tileLayer, downloadGeometry
   const prj = spatialReference.getProjection();
   const fullExtent = spatialReference.getFullExtent();
   const code = prj.code;
-
   const statistics = {success: 0, error: 0, percentage: 0, count: length};
   let index = 0;
   const download = async () => {
@@ -97,7 +96,7 @@ export function downloadClipLoop (list, apiDownload, tileLayer, downloadGeometry
       // testDraw2(tileLayer, relation.intersection);
       // 裁切下载
       clipImage.addTempGeometry(relation.intersection, relation.rect);
-      const imageBuffer = await clipImage.getImage();
+      const imageBuffer = await clipImage.getImage(imageType);
       item.imageBuffer = imageBuffer;
       apiDownload(item);
       index++;

@@ -20,7 +20,7 @@ export class TileTMS {
     setState(true);
     const list = this.calcTiles();
     if (data.clipImage) {
-      downloadClipLoop(list, apiDownload, this.titleLayer, data.downloadGeometry);
+      downloadClipLoop(list, apiDownload, this.titleLayer, data.downloadGeometry, this.imageType);
     } else {
       downloadLoop(list, apiDownload);
     }
@@ -71,7 +71,7 @@ export class TileTMSList {
     setMapLoading(false);
 
     if (data.clipImage) {
-      downloadClipLoop(list, apiDownload, this.titleLayer[0], data.downloadGeometry);
+      downloadClipLoop(list, apiDownload, this.titleLayer[0], data.downloadGeometry, this.imageType);
     } else {
       downloadLoop(list, apiDownload);
     }
@@ -119,7 +119,7 @@ export class TileTMSList {
 
     const list = this.calcTiles();
     if (data.clipImage) {
-      downloadClipLoop(list, apiDownload, this.titleLayer[0], data.downloadGeometry);
+      downloadClipLoop(list, apiDownload, this.titleLayer[0], data.downloadGeometry, this.imageType);
     } else {
       downloadLoop(list, apiDownload);
     }
