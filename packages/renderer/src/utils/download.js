@@ -113,3 +113,99 @@ export function downloadClipLoop (list, apiDownload, tileLayer, downloadGeometry
     download();
   });
 }
+
+/**
+ * 下载单张瓦片
+ * @param {*} tile 瓦片参数
+ * @param {*} downloadOption 下载参数
+ * @returns Promise
+ */
+export function downloadImage (tile, downloadOption) {
+  const { clipImage } = downloadOption;
+  if (clipImage) {
+    return _downloadClipImage(tile, downloadOption);
+  } else {
+    return _downloadImage(tile, downloadOption);
+  }
+}
+
+/**
+ * 下载单张瓦片
+ * @param {*} tile
+ * @param {*} downloadOption
+ * @returns
+ */
+function _downloadImage (tile, downloadOption) {
+  return new Promise((resolve) => {
+
+    const temppath = downloadOption.downloadPath + tile.z + '\\' + tile.x;
+    window.electron.ipcRenderer.send('ensure-dir', temppath);
+    const savePath = temppath + '\\' + tile.y + downloadOption.pictureType;
+    const param = {zoom: tile.z, url:tile.url, savePath, x:tile.x, y:tile.y};
+
+    window.electron.ipcRenderer.send('save-image', param);
+    window.electron.imageDownloadDone(state => {
+      if (state.state === 'completed') {
+        resolve(true);
+      } else {
+        resolve(false);
+      }
+    });
+  });
+}
+
+/**
+ * 下载单张瓦片并裁切
+ * @param {*} tile
+ * @param {*} downloadOption
+ * @returns
+ */
+function _downloadClipImage (tile, downloadOption) {
+  return new Promise((resolve) => {
+    const { tileLayer, downloadGeometry, pictureType, downloadPath, imageType } = downloadOption;
+    // 获取坐标投影信息
+    const { width, height } = tileLayer.getTileSize();
+    const spatialReference = tileLayer.getSpatialReference();
+    const prj = spatialReference.getProjection();
+    const fullExtent = spatialReference.getFullExtent();
+    const code = prj.code;
+
+    const item = tile;
+    const apiDownload = () => {
+      const temppath = downloadPath + tile.z + '\\' + tile.x;
+      window.electron.ipcRenderer.send('ensure-dir', temppath);
+      const savePath = temppath + '\\' + tile.y + pictureType;
+      const param = {zoom: tile.z, url:tile.url, savePath, x:tile.x, y:tile.y};
+      window.electron.ipcRenderer.send('save-image', param);
+    };
+    const relation = judgeTile(downloadGeometry, {
+      width,
+      height,
+      spatialReference,
+      prj,
+      fullExtent,
+      code,
+      tile: {x:item.x, y:item.y,z:item.zoom},
+    });
+    if (relation === 1) {
+      apiDownload(item);
+    } else if (relation === 2) {
+      //
+    } else if (typeof relation === 'object') {
+      // 裁切下载
+      clipImage.addTempGeometry(relation.intersection, relation.rect);
+      clipImage.getImage(imageType).then(imageBuffer => {
+        item.imageBuffer = imageBuffer;
+        apiDownload(item);
+      });
+    }
+
+    window.electron.imageDownloadDone(state => {
+      if (state.state === 'completed') {
+        resolve(true);
+      } else {
+        resolve(false);
+      }
+    });
+  });
+}

@@ -36,14 +36,14 @@ export default class FileSave{
     window.electron.ipcRenderer.send('ensure-dir', path);
   }
   downloadTms(data) {
-    if (Array.isArray(data.mapConfig.titleLayer) && data.mapConfig.titleLayer.length > 1) {
+    if (Array.isArray(data.mapConfig.tileLayer) && data.mapConfig.tileLayer.length > 1) {
       if (data.mergeLayers) {
         new TileTMSListMerge(data, this.saveImagesAndMerge, this.ensureDirSync);
       } else {
         new TileTMSList(data, this.saveImage, this.ensureDirSync);
       }
     } else {
-      new TileTMS(data, this.saveImage, this.ensureDirSync);
+      new TileTMS(data);
     }
 
   }

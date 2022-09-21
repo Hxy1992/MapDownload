@@ -29,7 +29,7 @@ export class TileTMS {
     // this.projection = data.mapConfig.projection.code; // BAIDU,EPSG:4326,EPSG:3857
     this.urlTemplate = data.mapConfig.config.urlTemplate;
     this.apiEnsureDirSync = apiEnsureDirSync;
-    this.titleLayer = data.mapConfig.titleLayer;
+    this.tileLayer = data.mapConfig.tileLayer;
     setState(true);
     downloadLoop(this.calcTiles(), this.apiDownload);
   }
@@ -64,7 +64,7 @@ export class TileTMS {
         this.apiEnsureDirSync(temppath);
         for (let y = minLat; y < maxLat; y++) {
           // const str3 = baseUrl.replace('{z}', z).replace('{x}', x).replace('{y}', y);
-          const str3 = this.titleLayer.getTileUrl(x, y, z);
+          const str3 = this.tileLayer.getTileUrl(x, y, z);
           const path2 = temppath + '\\' + y + pictureType;
           list.push({zoom: z, url:str3, savePath:path2});
         }
@@ -85,11 +85,11 @@ export class TileTMSList {
     this.minZoom = data.minZoom;
     this.mapExtent = data.extent;
     this.apiEnsureDirSync = apiEnsureDirSync;
-    this.titleLayer = data.mapConfig.titleLayer;
+    this.tileLayer = data.mapConfig.tileLayer;
     setState(true);
 
     let list = [];
-    data.mapConfig.titleLayer.forEach(layer => {
+    data.mapConfig.tileLayer.forEach(layer => {
       list = [...list, ...this.calcTiles(layer.config().style, layer)];
     });
     downloadLoop(list, this.apiDownload);
@@ -144,10 +144,10 @@ export class TileTMSList {
     this.minZoom = data.minZoom;
     this.mapExtent = data.extent;
     this.apiEnsureDirSync = apiEnsureDirSync;
-    this.titleLayer = data.mapConfig.titleLayer;
+    this.tileLayer = data.mapConfig.tileLayer;
     setState(true);
 
-    downloadLoop(this.calcTiles(data.mapConfig.titleLayer), this.apiDownload);
+    downloadLoop(this.calcTiles(data.mapConfig.tileLayer), this.apiDownload);
   }
   calcTiles(layers) {
     // 当前绝对路径

@@ -134,7 +134,7 @@ export default class baseMap{
       return {
         config: layers.map(temp => {return temp.config();}),
         projection: baseMap.getProjection(),
-        titleLayer: layers,
+        tileLayer: layers,
         maxZoom: baseMap.getMaxZoom(),
         minZoom: baseMap.getMinZoom(),
       };
@@ -142,7 +142,7 @@ export default class baseMap{
       return {
         config: baseMap.config(),
         projection: baseMap.getProjection(),
-        titleLayer: baseMap,
+        tileLayer: baseMap,
         maxZoom: baseMap.getMaxZoom(),
         minZoom: baseMap.getMinZoom(),
       };

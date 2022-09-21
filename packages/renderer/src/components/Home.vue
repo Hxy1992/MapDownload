@@ -180,8 +180,8 @@ export default defineComponent({
         if (showMsg) window.$message.warning('获取下载范围错误，请重新绘制下载范围');
         return false;
       }
-      const {titleLayer,maxZoom,minZoom,projection} = map.getBaseMapConfig();
-      this.saveLayers = titleLayer;
+      const {tileLayer,maxZoom,minZoom,projection} = map.getBaseMapConfig();
+      this.saveLayers = tileLayer;
       this.limitMaxZoom = maxZoom;
       this.limitMinZoom = minZoom;
       this.isBaidu = projection.code === 'BAIDU';
@@ -192,12 +192,14 @@ export default defineComponent({
     },
     save(val) {
       this.saveVisible = false;
-      const mapConfig = map.getBaseMapConfig();
-      val.mapConfig = mapConfig;
-      if (val.clipImage) {
-        val.downloadGeometry = map.getDownloadGeometry();
-      }
-      new FileSave(val);
+      this.$nextTick(() => {
+        const mapConfig = map.getBaseMapConfig();
+        val.mapConfig = mapConfig;
+        if (val.clipImage) {
+          val.downloadGeometry = map.getDownloadGeometry();
+        }
+        new FileSave(val);
+      });
     },
     cancelSave() {
       setMapLoading(false);

@@ -58,6 +58,12 @@
             type="checkbox"
           >是否合并
         </div>
+        <div
+          v-if="mergeLayers"
+          class="warning-merge"
+        >
+          下载大量瓦片时，合并可能会造成卡死！
+        </div>
       </div>
       <div class="item">
         <span class="label">边界裁切：</span>
@@ -259,5 +265,10 @@ export default defineComponent({
     width: 80px;
     text-align: right;
   }
+}
+.warning-merge{
+  width: 100%;
+  color: red;
+  padding-left: 83px;
 }
 </style>

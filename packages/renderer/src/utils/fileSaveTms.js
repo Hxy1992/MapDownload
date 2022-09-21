@@ -1,5 +1,5 @@
 // 瓦片转换
-import { setState } from './progress';
+import { setState, setProgress } from './progress';
 import { downloadLoop, downloadClipLoop } from './download';
 import {setMapLoading} from './baseMap.js';
 
@@ -7,46 +7,45 @@ import {setMapLoading} from './baseMap.js';
  * 下载TMS瓦片
  */
 export class TileTMS {
-  constructor(data, apiDownload, apiEnsureDirSync) {
+  constructor(data) {
     this.rootPath = data.savePath; // 文件根目录
     this.maxZoom = data.maxZoom;
     this.minZoom = data.minZoom;
-    this.mapExtent = data.extent;
     this.imageType = data.imageType;
-    // this.projection = data.mapConfig.projection.code; // BAIDU,EPSG:4326,EPSG:3857
-    this.urlTemplate = data.mapConfig.config.urlTemplate;
-    this.apiEnsureDirSync = apiEnsureDirSync;
-    this.titleLayer = data.mapConfig.titleLayer;
-    setState(true);
-    const list = this.calcTiles();
-    if (data.clipImage) {
-      downloadClipLoop(list, apiDownload, this.titleLayer, data.downloadGeometry, this.imageType);
-    } else {
-      downloadLoop(list, apiDownload);
-    }
+    this.tileLayer = data.mapConfig.tileLayer;
+    this.downloadGeometry = data.downloadGeometry;
+    this.downloadTiles(data.clipImage);
   }
-  calcTiles() {
+  async downloadTiles(clipImage) {
     // 当前绝对路径
     const downloadPath = this.rootPath + '\\';
-
     // 下载范围
     const zmin = this.minZoom;
     const zmax = this.maxZoom + 1;
     const pictureType = '.' + this.imageType;
-    // 遍历URL，获取数据
-    const list = [];
-    for (let z = zmin; z < zmax; z++) {
-      const tileGrids = this.titleLayer._getCascadeTiles(z).tileGrids[0];
-      for (let x = 0; x < tileGrids.tiles.length; x++) {
-        const tile = tileGrids.tiles[x];
-        const temppath = downloadPath + tile.z + '\\' + tile.x;
-        this.apiEnsureDirSync(temppath);
-        const savePath = temppath + '\\' + tile.y + pictureType;
-        list.push({zoom: tile.z, url:tile.url, savePath, x:tile.x, y:tile.y});
-      }
+    // 遍历下载
+    const option = {
+      downloadPath,
+      pictureType,
+      imageType: this.imageType,
+    };
+    if (clipImage) {
+      option.clipImage = clipImage;
+      option.tileLayer = this.tileLayer;
+      option.downloadGeometry = this.downloadGeometry;
     }
+    const statistics = {percentage: 0, count: 100};
+    setState(true);
+    for (let z = zmin; z < zmax; z++) {
+      statistics.percentage = Number(((z - zmin) / (zmax - zmin)).toFixed(2));
+      setProgress(statistics);
+      await this.tileLayer.downloadCascadeTiles(z, option);
+    }
+    statistics.percentage = 100;
+    setProgress(statistics);
+    setState(false);
     setMapLoading(false);
-    return list;
+    window.$message.success('瓦片数据下载完成。');
   }
 }
 
@@ -54,52 +53,53 @@ export class TileTMS {
  * 下载TMS瓦片集合
  */
 export class TileTMSList {
-  constructor(data, apiDownload, apiEnsureDirSync) {
+  constructor(data) {
     this.rootPath = data.savePath; // 文件根目录
     this.maxZoom = data.maxZoom;
     this.minZoom = data.minZoom;
-    this.mapExtent = data.extent;
     this.imageType = data.imageType;
-    this.apiEnsureDirSync = apiEnsureDirSync;
-    this.titleLayer = data.mapConfig.titleLayer;
-    setState(true);
+    this.tileLayer = data.mapConfig.tileLayer;
+    this.downloadGeometry = data.downloadGeometry;
 
-    let list = [];
-    data.mapConfig.titleLayer.forEach(layer => {
-      list = [...list, ...this.calcTiles(layer.config().style, layer)];
-    });
-    setMapLoading(false);
-
-    if (data.clipImage) {
-      downloadClipLoop(list, apiDownload, this.titleLayer[0], data.downloadGeometry, this.imageType);
-    } else {
-      downloadLoop(list, apiDownload);
-    }
+    this.downloadLayers(data);
   }
-  calcTiles(subpath, layer) {
+  async downloadLayers(data) {
+    setState(true);
+    const statistics = {percentage: 0, count: 100};
+    for (let index = 0; index < data.mapConfig.tileLayer.length; index++) {
+      statistics.percentage = Number(((index) / (data.mapConfig.tileLayer.length)).toFixed(2));
+      setProgress(statistics);
+      const layer = data.mapConfig.tileLayer[index];
+      await this.downloadTiles(data.clipImage, layer);
+    }
+    statistics.percentage = 100;
+    setProgress(statistics);
+    setState(false);
+    setMapLoading(false);
+    window.$message.success('瓦片数据下载完成。');
+  }
+  async downloadTiles(clipImage, tileLayer) {
     // 当前绝对路径
-    const downloadPath = this.rootPath + '\\' + subpath + '\\';
-
+    const downloadPath = this.rootPath + '\\' + tileLayer.config().style + '\\';
     // 下载范围
     const zmin = this.minZoom;
     const zmax = this.maxZoom + 1;
-    // 下载地址
     const pictureType = '.' + this.imageType;
-    // 遍历URL，获取数据
-    const list = [];
-    for (let z = zmin; z < zmax; z++) {
-      const tileGridsList = layer._getCascadeTiles(z).tileGrids;
-      tileGridsList.forEach(tileGrids => {
-        for (let x = 0; x < tileGrids.tiles.length; x++) {
-          const tile = tileGrids.tiles[x];
-          const temppath = downloadPath + tile.z + '\\' + tile.x;
-          this.apiEnsureDirSync(temppath);
-          const savePath = temppath + '\\' + tile.y + pictureType;
-          list.push({zoom: tile.z, url:tile.url, savePath, x:tile.x, y:tile.y});
-        }
-      });
+    // 遍历下载
+    const option = {
+      downloadPath,
+      pictureType,
+      imageType: this.imageType,
+    };
+    if (clipImage) {
+      option.clipImage = clipImage;
+      option.tileLayer = tileLayer;
+      option.downloadGeometry = this.downloadGeometry;
     }
-    return list;
+    for (let z = zmin; z < zmax; z++) {
+      await tileLayer.downloadCascadeTiles(z, option);
+    }
+    return Promise.resolve();
   }
 }
 
@@ -114,12 +114,12 @@ export class TileTMSList {
     this.mapExtent = data.extent;
     this.imageType = data.imageType;
     this.apiEnsureDirSync = apiEnsureDirSync;
-    this.titleLayer = data.mapConfig.titleLayer;
+    this.tileLayer = data.mapConfig.tileLayer;
     setState(true);
 
     const list = this.calcTiles();
     if (data.clipImage) {
-      downloadClipLoop(list, apiDownload, this.titleLayer[0], data.downloadGeometry, this.imageType);
+      downloadClipLoop(list, apiDownload, this.tileLayer[0], data.downloadGeometry, this.imageType);
     } else {
       downloadLoop(list, apiDownload);
     }
@@ -134,8 +134,8 @@ export class TileTMSList {
     // 下载地址
     const pictureType = '.' + this.imageType;
 
-    const imgLyr = this.titleLayer.find(t => { return !t.config().style.includes('_Label'); });
-    const imgLyrLabel = this.titleLayer.find(t => { return t.config().style.includes('_Label'); });
+    const imgLyr = this.tileLayer.find(t => { return !t.config().style.includes('_Label'); });
+    const imgLyrLabel = this.tileLayer.find(t => { return t.config().style.includes('_Label'); });
     const storeMap = {};
     for (let z = zmin; z < zmax; z++) {
       const tileGridsList = imgLyr._getCascadeTiles(z).tileGrids;
