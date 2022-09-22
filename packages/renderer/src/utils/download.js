@@ -3,7 +3,7 @@ import { setState, setProgress } from './progress';
 // eslint-disable-next-line
 import { judgeTile, testDraw2 } from './baseMap';
 import { ClipImage } from './clipImage';
-const clipImage = new ClipImage();
+const CLIPIMAGE = new ClipImage();
 /**
  * 下载瓦片
  * @param {Array} list 瓦片列表
@@ -95,8 +95,8 @@ export function downloadClipLoop (list, apiDownload, tileLayer, downloadGeometry
     } else if (typeof relation === 'object') {
       // testDraw2(tileLayer, relation.intersection);
       // 裁切下载
-      clipImage.addTempGeometry(relation.intersection, relation.rect);
-      const imageBuffer = await clipImage.getImage(imageType);
+      CLIPIMAGE.addTempGeometry(relation.intersection, relation.rect);
+      const imageBuffer = await CLIPIMAGE.getImage(imageType);
       item.imageBuffer = imageBuffer;
       apiDownload(item);
       index++;
@@ -170,14 +170,15 @@ function _downloadClipImage (tile, downloadOption) {
     const fullExtent = spatialReference.getFullExtent();
     const code = prj.code;
 
-    const item = tile;
-    const apiDownload = () => {
-      const temppath = downloadPath + tile.z + '\\' + tile.x;
+    const apiDownload = (temp, imageBuffer) => {
+      const temppath = downloadPath + temp.z + '\\' + temp.x;
       window.electron.ipcRenderer.send('ensure-dir', temppath);
-      const savePath = temppath + '\\' + tile.y + pictureType;
-      const param = {zoom: tile.z, url:tile.url, savePath, x:tile.x, y:tile.y};
+      const savePath = temppath + '\\' + temp.y + pictureType;
+      const param = {zoom: temp.z, url:temp.url, savePath, x:temp.x, y:temp.y, imageBuffer};
       window.electron.ipcRenderer.send('save-image', param);
     };
+
+    const item = tile;
     const relation = judgeTile(downloadGeometry, {
       width,
       height,
@@ -185,18 +186,19 @@ function _downloadClipImage (tile, downloadOption) {
       prj,
       fullExtent,
       code,
-      tile: {x:item.x, y:item.y,z:item.zoom},
+      tile: {x:item.x, y:item.y,z:item.zoom || item.z},
     });
     if (relation === 1) {
       apiDownload(item);
     } else if (relation === 2) {
-      //
+      resolve(true);
+      return;
     } else if (typeof relation === 'object') {
+      // testDraw2(tileLayer, relation.intersection);
       // 裁切下载
-      clipImage.addTempGeometry(relation.intersection, relation.rect);
-      clipImage.getImage(imageType).then(imageBuffer => {
-        item.imageBuffer = imageBuffer;
-        apiDownload(item);
+      CLIPIMAGE.addTempGeometry(relation.intersection, relation.rect);
+      CLIPIMAGE.getImage(imageType).then(imageBuffer => {
+        apiDownload(item, imageBuffer);
       });
     }
 

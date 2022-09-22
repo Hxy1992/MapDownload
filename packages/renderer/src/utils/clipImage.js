@@ -76,13 +76,27 @@ export class ClipImage {
   }
   getImage(imageType) {
     return new Promise(resolve => {
-      setTimeout(() => {
-        const img = this.map.toDataURL({
-          'mimeType' : 'image/' + imageType,
-          'save' : false,
-        });
-        resolve(img);
-      }, 100);
+      // setTimeout(() => {
+      //   const img = this.map.toDataURL({
+      //     'mimeType' : 'image/' + imageType,
+      //     'save' : false,
+      //   });
+      //   resolve(img);
+      // }, 100);
+
+      const isComplete = () => {
+        const over = !this.map.isMoving() && !this.map.isZooming() && !this.map.isAnimating();
+        if (!over) {
+          requestAnimationFrame(isComplete);
+        } else {
+          const img = this.map.toDataURL({
+            'mimeType' : 'image/' + imageType,
+            'save' : false,
+          });
+          resolve(img);
+        }
+      };
+      requestAnimationFrame(isComplete);
     });
   }
 }
