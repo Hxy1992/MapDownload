@@ -37,7 +37,7 @@ export class TileTMS {
     const statistics = {percentage: 0, count: 100};
     setState(true);
     for (let z = zmin; z < zmax; z++) {
-      statistics.percentage = Number(((z - zmin) / (zmax - zmin)).toFixed(2));
+      statistics.percentage = Number(((z - zmin) / (zmax - zmin) * 100).toFixed(2));
       setProgress(statistics);
       await this.tileLayer.downloadCascadeTiles(z, option);
     }
@@ -67,10 +67,8 @@ export class TileTMSList {
     setState(true);
     const statistics = {percentage: 0, count: 100};
     for (let index = 0; index < data.mapConfig.tileLayer.length; index++) {
-      statistics.percentage = Number(((index) / (data.mapConfig.tileLayer.length)).toFixed(2));
-      setProgress(statistics);
       const layer = data.mapConfig.tileLayer[index];
-      await this.downloadTiles(data.clipImage, layer);
+      await this.downloadTiles(data.clipImage, layer, (index + 1) / (data.mapConfig.tileLayer.length) * 100);
     }
     statistics.percentage = 100;
     setProgress(statistics);
@@ -78,7 +76,7 @@ export class TileTMSList {
     setMapLoading(false);
     window.$message.success('瓦片数据下载完成。');
   }
-  async downloadTiles(clipImage, tileLayer) {
+  async downloadTiles(clipImage, tileLayer, count) {
     // 当前绝对路径
     const downloadPath = this.rootPath + '\\' + tileLayer.config().style + '\\';
     // 下载范围
@@ -97,6 +95,8 @@ export class TileTMSList {
       option.downloadGeometry = this.downloadGeometry;
     }
     for (let z = zmin; z < zmax; z++) {
+      const percentage = Number(((z - zmin) / (zmax - zmin) * count).toFixed(2));
+      setProgress({percentage});
       await tileLayer.downloadCascadeTiles(z, option);
     }
     return Promise.resolve();
