@@ -80,7 +80,7 @@ export default function getParams() {
     },
     Osm: {
       Normal: {
-        url: 'https://c.tile.openstreetmap.org/{z}/{x}/{y}.png',
+        url: 'https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png',
       },
       Bike: {
         url: 'https://c.tile.thunderforest.com/cycle/{z}/{x}/{y}.png?apikey=6170aad10dfd42a38d4d8c709a536f38',
