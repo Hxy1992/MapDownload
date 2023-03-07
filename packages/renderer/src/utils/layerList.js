@@ -194,6 +194,7 @@ const mapList = [
         value: 'Normal',
         prejection: 'EPSG:3857',
         exteral: {
+          subdomains: ['a', 'b', 'c'],
           attribution: 'OpenStreetMap-电子地图',
         },
       },
