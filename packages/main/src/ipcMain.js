@@ -5,6 +5,7 @@ const fse = require('fs-extra');
 const fs = require('fs');
 const sharp = require('sharp');
 const request = require('superagent');
+import { requestHandle } from './ipHandle';
 
 ipcMain.handle('show-dialog', async () => {
   const result = await dialog.showOpenDialog({ properties: ['openFile', 'openDirectory'] });
@@ -61,7 +62,7 @@ export function ipcHandle(win) {
     }
 
     // got.stream(args.url).pipe(sharpStream);
-    request.get(args.url).pipe(sharpStream);
+    requestHandle(request.get(args.url)).pipe(sharpStream);
     Promise.all(promises)
       .then(() => {
         win.webContents.send('imageDownloadDone', {
@@ -90,7 +91,7 @@ export function ipcHandle(win) {
         const sharpStream = sharp({
           failOnError: false,
         });
-        request.get(item.url).pipe(sharpStream);
+        requestHandle(request.get(item.url)).pipe(sharpStream);
         const bff = await sharpStream.toBuffer();
         if (item.isLabel) {
           imgBack = bff;
