@@ -413,6 +413,36 @@ const mapList = [
       },
     ],
   },
+  {
+    label: 'Google',
+    value: 'Google',
+    children: [
+      {
+        label: '普通',
+        value: 'Normal',
+        prejection: 'EPSG:3857',
+        exteral: {
+          attribution: 'Google-普通',
+        },
+      },
+      {
+        label: '卫星',
+        value: 'Satellite',
+        prejection: 'EPSG:3857',
+        exteral: {
+          attribution: 'Google-卫星',
+        },
+      },
+      {
+        label: '卫星Label',
+        value: 'Satellite_Label',
+        prejection: 'EPSG:3857',
+        exteral: {
+          attribution: 'Google-卫星Label',
+        },
+      },
+    ],
+  },
 ];
 
 export function defaultMap() {
