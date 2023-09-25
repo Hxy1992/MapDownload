@@ -102,9 +102,6 @@ var map = new maptalks.Map('map', {
 # TODO
 + 自定义图层加载、下载，支持上传geojson作为下载范围
 
-# 注意
-1. 在 Windows 家庭版中可能会受到一些 Content Security Policy（CSP）的限制，导致脚本或内容加载失败，见 [issues 11](https://github.com/Hxy1992/MapDownload/issues/11#issuecomment-1674279260)
-
 如果该项目对你有帮助，麻烦给个star！
 
 声明：本软件仅供个人学习与科研使用，所下载的数据版权归各个地图服务商所有，任何组织或个人因数据使用不当造成的问题，软件作者不负责任。
