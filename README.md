@@ -101,6 +101,7 @@ var map = new maptalks.Map('map', {
 
 # TODO
 + 自定义图层加载、下载，支持上传geojson作为下载范围
++ 瓦片拼接大图
 
 如果该项目对你有帮助，麻烦给个star！
 
