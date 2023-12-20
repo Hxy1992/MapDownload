@@ -12,6 +12,8 @@
 
 > 软件下载地址：https://github.com/Hxy1992/MapDownload/releases
 
+> V0.42版本win-unpacked压缩包 百度网盘链接：https://pan.baidu.com/s/1M12KnC8bIvyHo3ik3hxy9A   提取码：9986
+
 ![image](https://user-images.githubusercontent.com/14800641/154039927-e8994f36-523b-40cb-b184-46a7d8e1a9f2.png)
 
 
