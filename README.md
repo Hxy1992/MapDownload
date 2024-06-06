@@ -2,7 +2,7 @@
 [![Required npm >= v8.1](https://img.shields.io/static/v1?label=npm&message=%3E=8.1&logo=npm&color)](https://github.com/npm/cli/releases)
 # map-download
 
-> 基于electron和maptalks实现高德地图、百度地图（包括百度自定义地图 ！！！百度个性化地图（午夜蓝、清新蓝、黑夜等等）链接已经失效！！！）、腾讯地图、OpenStreetMap、CartoDb、ArcGIS在线地图、天地图、MapBox的下载
+> 基于electron和maptalks实现高德地图、百度地图（包括百度自定义地图 ！！！百度个性化地图午夜蓝、清新蓝、黑夜等等链接已经失效！！！）、腾讯地图、OpenStreetMap、CartoDb、ArcGIS在线地图、天地图、MapBox的下载
 
 > 支持卫星遥感影像和标注合并
 
