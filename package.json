@@ -49,7 +49,7 @@
     "@turf/intersect": "^6.5.0",
     "electron-updater": "4.6.2",
     "fs-extra": "^10.0.0",
-    "maptalks": "^1.0.0-beta.7",
+    "maptalks": "^1.0.0-rc.33",
     "marked": "^4.0.8",
     "sharp": "^0.29.3",
     "superagent": "^6.1.0",

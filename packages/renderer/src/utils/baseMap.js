@@ -1,4 +1,5 @@
 // 地图
+import 'maptalks/dist/maptalks.css';
 import * as maptalks from 'maptalks';
 import TileLayerCollection from './TileLayerCollection/TileLayerCollection';
 import {defaultMap} from './layerList';
