@@ -18,6 +18,9 @@ const config = {
   extraMetadata: {
     version: process.env.VITE_APP_VERSION,
   },
+  nsis: {
+    allowToChangeInstallationDirectory: true
+  }
 };
 
 module.exports = config;
