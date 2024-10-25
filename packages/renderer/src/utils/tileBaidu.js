@@ -141,7 +141,7 @@ class TileBaidu {
   }
   calcTiles() {
     // 当前绝对路径
-    const downloadPath = this.rootPath + '\\';
+    const downloadPath = this.rootPath + '/';
 
     // 下载范围
     const zmin = this.minZoom;
@@ -166,12 +166,12 @@ class TileBaidu {
       if (minLat < 0) minLat = 0;
       const maxLat = Math.max(bottom_tile, top_tile);
       for (let x = minLong; x < maxLong; x++) {
-        const temppath = downloadPath + z + '\\' + x;
+        const temppath = downloadPath + z + '/' + x;
         this.apiEnsureDirSync(temppath);
         for (let y = minLat; y < maxLat; y++) {
           // const str3 = baseUrl.replace('{z}', z).replace('{x}', x).replace('{y}', y);
           const str3 = this.tileLayer.getTileUrl(x, y, z);
-          const path2 = temppath + '\\' + y + pictureType;
+          const path2 = temppath + '/' + y + pictureType;
           list.push({ zoom: z, url: str3, savePath: path2 });
         }
       }
