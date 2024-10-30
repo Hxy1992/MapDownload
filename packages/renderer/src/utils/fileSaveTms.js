@@ -18,7 +18,7 @@ export class TileTMS {
   }
   async downloadTiles(clipImage) {
     // 当前绝对路径
-    const downloadPath = this.rootPath + '\\';
+    const downloadPath = this.rootPath + '/';
     // 下载范围
     const zmin = this.minZoom;
     const zmax = this.maxZoom + 1;
@@ -78,7 +78,7 @@ export class TileTMSList {
   }
   async downloadTiles(clipImage, tileLayer, count) {
     // 当前绝对路径
-    const downloadPath = this.rootPath + '\\' + tileLayer.config().style + '\\';
+    const downloadPath = this.rootPath + '/' + tileLayer.config().style + '/';
     // 下载范围
     const zmin = this.minZoom;
     const zmax = this.maxZoom + 1;
@@ -126,7 +126,7 @@ export class TileTMSList {
   }
   calcTiles() {
     // 当前绝对路径
-    const downloadPath = this.rootPath + '\\';
+    const downloadPath = this.rootPath + '/';
 
     // 下载范围
     const zmin = this.minZoom;
@@ -142,9 +142,9 @@ export class TileTMSList {
       tileGridsList.forEach(tileGrids => {
         for (let x = 0; x < tileGrids.tiles.length; x++) {
           const tile = tileGrids.tiles[x];
-          const temppath = downloadPath + tile.z + '\\' + tile.x;
+          const temppath = downloadPath + tile.z + '/' + tile.x;
           this.apiEnsureDirSync(temppath);
-          const savePath = temppath + '\\' + tile.y + pictureType;
+          const savePath = temppath + '/' + tile.y + pictureType;
 
           storeMap[`${tile.x}${tile.y}${tile.z}`] = {zoom: tile.z, layers:[
             {

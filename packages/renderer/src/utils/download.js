@@ -138,9 +138,9 @@ export function downloadImage (tile, downloadOption) {
 function _downloadImage (tile, downloadOption) {
   return new Promise((resolve) => {
 
-    const temppath = downloadOption.downloadPath + tile.z + '\\' + tile.x;
+    const temppath = downloadOption.downloadPath + tile.z + '/' + tile.x;
     window.electron.ipcRenderer.send('ensure-dir', temppath);
-    const savePath = temppath + '\\' + tile.y + downloadOption.pictureType;
+    const savePath = temppath + '/' + tile.y + downloadOption.pictureType;
     const param = {zoom: tile.z, url:tile.url, savePath, x:tile.x, y:tile.y};
 
     window.electron.ipcRenderer.send('save-image', param);
@@ -171,9 +171,9 @@ function _downloadClipImage (tile, downloadOption) {
     const code = prj.code;
 
     const apiDownload = (temp, imageBuffer) => {
-      const temppath = downloadPath + temp.z + '\\' + temp.x;
+      const temppath = downloadPath + temp.z + '/' + temp.x;
       window.electron.ipcRenderer.send('ensure-dir', temppath);
-      const savePath = temppath + '\\' + temp.y + pictureType;
+      const savePath = temppath + '/' + temp.y + pictureType;
       const param = {zoom: temp.z, url:temp.url, savePath, x:temp.x, y:temp.y, imageBuffer};
       window.electron.ipcRenderer.send('save-image', param);
     };
