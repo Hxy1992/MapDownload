@@ -5,6 +5,7 @@ const fse = require('fs-extra');
 const fs = require('fs');
 const sharp = require('sharp');
 const request = require('superagent');
+const path = require('path');
 import { requestHandle } from './ipHandle';
 
 ipcMain.handle('show-dialog', async () => {
@@ -19,28 +20,11 @@ ipcMain.on('ensure-dir', (event, args) => {
 
 // 下载事件
 export function ipcHandle(win) {
-  // electron downloadURL方法
-  // let currentConfig = null;
-  // ipcMain.on('save-image', (event, item) => {
-  //   currentConfig = item;
-  //   win.webContents.downloadURL(currentConfig.url);
-  // });
-  // win.webContents.session.on('will-download', (event, item) => {
-  //   const savePath = currentConfig.savePath;
-  //   // 设置下载目录，阻止系统dialog的出现
-  //   item.setSavePath(savePath);
-  //   // 下载任务完成
-  //   item.once('done', (e, state) => {
-  //     win.webContents.send('imageDownloadDone', {
-  //       state,
-  //     });
-  //   });
-  // });
-
 
   // superagent & sharp 下载图片
   ipcMain.on('save-image', (event, args) => {
     // sharp(base64Data).composite 反过来试试
+    const savePath = path.normalize(args.savePath);
     const sharpStream = sharp({
       failOnError: false,
     });
@@ -51,17 +35,18 @@ export function ipcHandle(win) {
       promises.push(
         sharpStream
           .composite([{ input: dataBuffer, gravity: 'centre', blend: 'dest-in' }])
-          .toFile(args.savePath),
+          .toFile(savePath),
       );
     } else {
       promises.push(
         sharpStream
           // .ensureAlpha()
-          .toFile(args.savePath),
+          .toFile(savePath),
       );
     }
 
     // got.stream(args.url).pipe(sharpStream);
+    // TODO 下载天地图瓦片报错 Input buffer contains unsupported image format
     requestHandle(request.get(args.url)).pipe(sharpStream);
     Promise.all(promises)
       .then(() => {
@@ -69,12 +54,12 @@ export function ipcHandle(win) {
           state: 'completed',
         });
       })
-      .catch(() => {
-        // console.error('Error processing files, let\'s clean it up', err);
+      .catch((err) => {
+        console.error('错误', err);
         try {
-          fs.unlinkSync(args.savePath);
-        } catch (e) {
-          console.error(e);
+          fs.unlinkSync(savePath);
+        } catch {
+          // do nothing
         }
         win.webContents.send('imageDownloadDone', {
           state: 'error',
@@ -85,6 +70,7 @@ export function ipcHandle(win) {
   // superagent & sharp 下载、合并图片
   ipcMain.on('save-image-merge', (event, args) => {
     try {
+      const savePath = path.normalize(args.savePath);
       let imgBack;
       const imgBuffer = [];
       args.layers.forEach(async (item, index) => {
@@ -116,17 +102,18 @@ export function ipcHandle(win) {
             }));
           }
           opration
-          .toFile(args.savePath)
+          .toFile(savePath)
           .then(() => {
             win.webContents.send('imageDownloadDone', {
               state: 'completed',
             });
           })
-          .catch(() => {
+          .catch((err) => {
+            console.error('错误', err);
             try {
-              fs.unlinkSync(args.savePath);
+              fs.unlinkSync(savePath);
             } catch (e) {
-              console.error(e);
+              // do nothing
             }
           });
         }
