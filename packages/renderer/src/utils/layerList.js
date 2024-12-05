@@ -253,27 +253,27 @@ const mapList = [
     value: 'Geoq',
     children: [
       {
-        label: '彩色',
-        value: 'Colour',
+        label: 'World_Imagery',
+        value: 'Satellite',
         prejection: 'EPSG:3857',
         exteral: {
-          attribution: 'ArcGIS-彩色',
+          attribution: 'ArcGIS-卫星地图',
         },
       },
       {
-        label: '灰度',
-        value: 'Gray',
+        label: 'World_Street_Map',
+        value: 'Street',
         prejection: 'EPSG:3857',
         exteral: {
-          attribution: 'ArcGIS-灰度',
+          attribution: 'ArcGIS-街景地图',
         },
       },
       {
-        label: '午夜蓝',
-        value: 'Midnightblue',
+        label: 'World_Physical_Map',
+        value: 'Physical',
         prejection: 'EPSG:3857',
         exteral: {
-          attribution: 'ArcGIS-午夜蓝',
+          attribution: 'ArcGIS-物理',
         },
       },
     ],
