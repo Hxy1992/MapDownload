@@ -6,7 +6,7 @@ const fs = require('fs');
 const sharp = require('sharp');
 const request = require('superagent');
 const path = require('path');
-import { requestHandle } from './ipHandle';
+import { getHeader } from './ipHandle';
 
 ipcMain.handle('show-dialog', async () => {
   const result = await dialog.showOpenDialog({ properties: ['openFile', 'openDirectory'] });
@@ -45,9 +45,7 @@ export function ipcHandle(win) {
       );
     }
 
-    // got.stream(args.url).pipe(sharpStream);
-    // TODO 下载天地图瓦片报错 Input buffer contains unsupported image format
-    requestHandle(request.get(args.url)).pipe(sharpStream);
+    request.get(args.url).set(getHeader()).pipe(sharpStream);
     Promise.all(promises)
       .then(() => {
         win.webContents.send('imageDownloadDone', {
@@ -77,7 +75,7 @@ export function ipcHandle(win) {
         const sharpStream = sharp({
           failOnError: false,
         });
-        requestHandle(request.get(item.url)).pipe(sharpStream);
+        request.get(args.url).set(getHeader()).pipe(sharpStream);
         const bff = await sharpStream.toBuffer();
         if (item.isLabel) {
           imgBack = bff;

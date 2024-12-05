@@ -4,27 +4,53 @@ import { getKeys } from '/@/utils/mapKey.js';
 export default function getParams() {
   const { mapboxKey, tdtKey } = getKeys();
 
+  const getTdtUrl = (url, layer) => {
+    const tdtUrlParams = 'SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&STYLE=default&TILEMATRIXSET=w&FORMAT=tiles&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&tk=';
+    return `${url}?LAYER=${layer}&${tdtUrlParams}${tdtKey}`;
+  };
+
   const params = {
     TDT: {
+      // Normal: {
+      //   url: 'https://t0.tianditu.gov.cn/DataServer?T=vec_w&X={x}&Y={y}&L={z}&tk=' + tdtKey,
+      // },
+      // Normal_Label: {
+      //   url: 'https://t0.tianditu.gov.cn/DataServer?T=cva_w&X={x}&Y={y}&L={z}&tk=' + tdtKey,
+      // },
+      // Satellite: {
+      //   url: 'https://t0.tianditu.gov.cn/DataServer?T=img_w&X={x}&Y={y}&L={z}&tk=' + tdtKey,
+      // },
+      // Satellite_Label: {
+      //   url: 'https://t0.tianditu.gov.cn/DataServer?T=cia_w&X={x}&Y={y}&L={z}&tk=' + tdtKey,
+      // },
+
+      // Terrain: {
+      //   url: 'https://t0.tianditu.gov.cn/DataServer?T=ter_w&X={x}&Y={y}&L={z}&tk=' + tdtKey,
+      // },
+
+      // Terrain_Label: {
+      //   url: 'https://t0.tianditu.gov.cn/DataServer?T=cta_w&X={x}&Y={y}&L={z}&tk=' + tdtKey,
+      // },
+
       Normal: {
-        url: 'https://t0.tianditu.gov.cn/DataServer?T=vec_w&X={x}&Y={y}&L={z}&tk=' + tdtKey,
+        url: getTdtUrl('https://t0.tianditu.gov.cn/vec_w/wmts', 'vec'),
       },
       Normal_Label: {
-        url: 'https://t0.tianditu.gov.cn/DataServer?T=cva_w&X={x}&Y={y}&L={z}&tk=' + tdtKey,
+        url: getTdtUrl('https://t0.tianditu.gov.cn/cva_w/wmts', 'cva'),
       },
       Satellite: {
-        url: 'https://t0.tianditu.gov.cn/DataServer?T=img_w&X={x}&Y={y}&L={z}&tk=' + tdtKey,
+        url: getTdtUrl('https://t0.tianditu.gov.cn/img_w/wmts', 'img'),
       },
       Satellite_Label: {
-        url: 'https://t0.tianditu.gov.cn/DataServer?T=cia_w&X={x}&Y={y}&L={z}&tk=' + tdtKey,
+        url: getTdtUrl('https://t0.tianditu.gov.cn/cia_w/wmts', 'cia'),
       },
 
       Terrain: {
-        url: 'https://t0.tianditu.gov.cn/DataServer?T=ter_w&X={x}&Y={y}&L={z}&tk=' + tdtKey,
+        url: getTdtUrl('https://t0.tianditu.gov.cn/ter_w/wmts', 'ter'),
       },
 
       Terrain_Label: {
-        url: 'https://t0.tianditu.gov.cn/DataServer?T=cta_w&X={x}&Y={y}&L={z}&tk=' + tdtKey,
+        url: getTdtUrl('https://t0.tianditu.gov.cn/cta_w/wmts', 'cta'),
       },
     },
     GEOQ: {
